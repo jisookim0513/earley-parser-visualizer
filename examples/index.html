@@ -54,8 +54,9 @@
         .on('click', function() { stepForward(nowtree); });
 
       var nodelist = [0, 1, 2, 3, 4, 5];
+      var initEdgeList = [[0,1,"1"], [1,2,"+"], [2,3,"2"], [3,4,"*"], [4,5,"3"]];
       var steplist = [[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->2"], [4,5,"E->Id"], [4,5,"Id->3"], [0,3,"E->E+E"], [2,5,"E->E*E"], [0,5,"E->E+E"], [0,5,"E->E*E"]];
-      var nowtree = new Tree(steplist, nodelist);
+      var nowtree = new Tree(steplist, nodelist, initEdgeList);
 
       drawTree(nowtree);
 
