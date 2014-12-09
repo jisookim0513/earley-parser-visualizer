@@ -1,12 +1,13 @@
 // Interpreter that takes in an AST from Jison
 // Keeps track of grammara and input that will be passed in to the Earley parser
 
-console.log("interpeter loadade");
 var grammars = {};
-var assocs = {}; // Key is string representing binary operator. Value is an int, presenting the operator's precedence. 
+// Key is string representing binary operator. Value is an array. 
+//First element int, presenting the operator's priority. 
+//Second element "left" or "right" which is the associtiavity
+var assocs = {}; 
 assocs.counter = 0;
-var dprecs = {}; // Key is Grammar. Value is an int presenting the operator's precedner
-var input = null;
+var dprecs = {}; // Key is Grammar. Value is an int presenting the rule's precedence
 
 function ExecError(m) {
   this.message = m;
@@ -19,22 +20,22 @@ function Grammar(lhs, rhs){
 	return lhs + " - > " + rhs;
 }
 
-//Helper to check precedence of grammar in dprecs. Because dictionaries by default check for referential equality
-function grammarPrec(grammar){
-	for (var gram in dprecs) {
-		if (dprecs.hasOwnProperty(gram) && gram.lhs == grammar.lhs && gram.rhs == grammar.rhs) {
-			return dprecs[gram];
-		}
+// Returns associtivaity of operator. either "left" or "right"
+function getOpAssoc(op){
+	if (op in assocs) {
+		return assocs[op][1];
+	} else {
+		throw new Error("Unknown associtiavity: " + op);
 	}
-	return null;
 }
 
-function addGrammarPrec(grammar, precLevel){
-	assertNumber(precLevel);
-	if (grammarPrec(grammar)) {
-		throw new ExecError("Dprec already defined for grammar: " +  lhs + " " + rhs );
+// Returns the precedence level of an operator
+function getOpPrec(op){
+	if (op in assocs){
+		return assocs[op][0];
+	} else {
+		throw new Error("Unknown Operator Precedence: " + op);
 	}
-	dprecs[grammar] = precLevel; 
 }
 
 function assertNumber(x){
@@ -65,31 +66,28 @@ function eval(ast) {
 			// Adds dprec based on operator's precendence
 			var operator = ast.prec;
 			if (operator){
-				if (! (operator in assocs)) {
-					throw new ExecError("Declaring precedence with unknown operator: " + operator);
-				}
-				var prec = assocs[operator];
+				var prec = getOpPrec(operator);
 				dprecs[grammar] = prec;
 			} 
 			return null;
 			break;
 
 		case "input" :
-			var rhs = ast.value;
-			input = rhs;
-			return {"grammars":grammars, "input":input};
+			var value = ast.value;
+			return {"grammars":grammars, "input":value};
 			break;
 
 		case "assoc":
 			var operators = ast.operators;
+			var assoc = ast.assoc;
 			var precLevel = assocs.counter + 1;
 			assocs.counter += 1;
 			for (i = 0; i < operators.length; i++) {
 				var operator = operators[i];
-				if (assocs[operator]) {
+				if (operator in assocs) {
 					throw new ExecError("Associativity/precedence already declared: " + operator);
 				}
-				assocs[operator] = precLevel;
+				assocs[operator] = [precLevel, assoc];
 			}
 			return null
 			break;

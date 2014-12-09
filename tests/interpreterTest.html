@@ -28,13 +28,18 @@
 					};
 
 	var astAssocPlusMin = { "type" : "assoc",
+							"assoc": "left",
 					 		"operators" : ["+", "-"],
 						  }
 
 	var astAssocMultDiv = { "type" : "assoc",
+							"assoc": "left",
 					 		"operators" : ["*", "/"],
 						  }
-
+	var astAssocExp = {"type": "assoc", 
+						"assoc":"right",
+						"operators":["^"],
+					}
 	var astInput = { "type" : "input",
 					 "value" : "1 + 1",
 				   }
@@ -62,18 +67,24 @@
 	function grammarDPrecTest(){
 		assertGrammar(astDPrec);
 		var grammar = Grammar(astDPrec.lhs, astDPrec.rhs);
-		assertEquals(1, grammarPrec(grammar));
+		assertEquals(1, dprecs[grammar]);
 	}
 	
 	function assocTest(){
 		setup();
 		eval(astAssocPlusMin);
 		eval(astAssocMultDiv);
-
-		assertEquals(1, assocs["+"]);
-		assertEquals(1, assocs["-"]);
-		assertEquals(2, assocs["*"]);
-		assertEquals(2, assocs["/"]);
+		eval(astAssocExp);
+		assertEquals(1, getOpPrec("+"));
+		assertEquals(1, getOpPrec("-"));
+		assertEquals(2, getOpPrec("*"));
+		assertEquals(2, getOpPrec("/"));
+		assertEquals(3, getOpPrec("^"))
+		assertEquals("left", getOpAssoc("+"));
+		assertEquals("left", getOpAssoc("-"));
+		assertEquals("left", getOpAssoc("*"));
+		assertEquals("left", getOpAssoc("/"));
+		assertEquals("right", getOpAssoc("^"));
 	}
 
 	function grammarPrecTest(){
