@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>JavaScript Hello World</title>
+	</head>
+	<script src="../interpreter.js"></script>
+	<script src="util.js"></script>
+	<script>
+	var astNoPrec = {  "type": "grammar",
+					   "lhs" : "E",
+					   "rhs" : "E;E",
+					   "dprec" : null,
+					   "prec": null,
+					};
+
+	var astDPrec = {  "type" : "grammar",
+					   "lhs" : "E",
+					    "rhs" : "E+E",
+					   "dprec": 1,
+					   "prec": null,
+					};
+
+	var astPrec = {  "type" : "grammar",
+					   "lhs" : "E",
+					   "rhs" : "E-E",
+					   "dprec": null,
+					   "prec": "+",
+					};
+
+	var astAssocPlusMin = { "type" : "assoc",
+					 		"operators" : ["+", "-"],
+						  }
+
+	var astAssocMultDiv = { "type" : "assoc",
+					 		"operators" : ["*", "/"],
+						  }
+
+	var astInput = { "type" : "input",
+					 "value" : "1 + 1",
+				   }
+	function setup(){
+		grammars = {};
+		assocs = {}; // Key is string representing binary operator. Value is an int, presenting the operator's precedence. 
+		assocs.counter = 0;
+		dprecs = {}; // Key is Grammar. Value is an int presenting the operator's precedner
+		input = null;
+	};
+
+	function assertGrammar(ast){
+		 setup();
+		 eval(ast);
+		 assertTrue(ast["lhs"] in grammars);
+		 var rhses = grammars["E"];
+		 assertInList(ast["rhs"], rhses);
+	};
+
+
+	function grammarSimpleTest(){
+		assertGrammar(astNoPrec);
+	}
+
+	function grammarDPrecTest(){
+		assertGrammar(astDPrec);
+		var grammar = Grammar(astDPrec.lhs, astDPrec.rhs);
+		assertEquals(1, grammarPrec(grammar));
+	}
+	
+	function assocTest(){
+		setup();
+		eval(astAssocPlusMin);
+		eval(astAssocMultDiv);
+
+		assertEquals(1, assocs["+"]);
+		assertEquals(1, assocs["-"]);
+		assertEquals(2, assocs["*"]);
+		assertEquals(2, assocs["/"]);
+	}
+
+	function grammarPrecTest(){
+		setup();
+		eval(astAssocPlusMin);
+		eval(astPrec);
+		assertEquals(1, dprecs[Grammar(astPrec.lhs, astPrec.rhs)]);
+	}
+
+	function inputTest(){
+		setup();
+		var response = eval(astInput);
+		assertEquals(response.grammars , grammars);
+		assertEquals(response.input, astInput.value);
+	}
+	grammarSimpleTest();
+	grammarDPrecTest();
+	assocTest();
+	grammarPrecTest();
+	inputTest();
+	
+	console.log("All tests pass!");
+	</script>
+</html>
