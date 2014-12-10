@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>CS164 Final Proj Ex1: Simple</title>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <style src="graph.css"></style>
+  </head>
+  <div id='root'></div>
+  <body>
+    <script type="text/javascript" src="graph.js"></script>
+    <script type="text/javascript" src="interpreter.js"></script>
+    <script type="text/javascript">
+      //the current graph being displayed
+
+      // width and height of svg
+      var w = 1024;
+      var h = 400;
+      var circleDist = 150;
+      var svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
+
+      var root = d3.select('#root')
+      
+      // creates a back button that calls stepBack with nowgraph
+      root.append('button')
+        .text('Back')
+        .on('click', function() {  stepBack(nowgraph); });
+
+      // creates a forward button that calls stepForward with nowgraph
+      root.append('button')
+        .text('Forward')
+        .on('click', function() { console.log(nowgraph);stepForward(nowgraph); });
+
+      // Receive input from REPL, parse it into AST
+      function handleUserInput(text){
+        var ast = parse(text);
+        var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
+        if (obj){
+          var grammars = obj.grammars;
+          var input = obj.input;
+          var earleyResult = earleyParse(grammars, input);
+          nowgraph = new Graph( earleyResult.edges, earleyResult.nodes, []);
+          drawGraph(nowgraph);
+        }
+
+      }
+
+      // Calls Jisoo's parser
+      function parse(text){
+        switch (text) {
+          case "grammar E -> E+E":
+            return {"type": "grammar", "lhs": "E", "rhs": "E+E", "dprec": null,"prec": null};
+          case "grammar E -> E*E":
+            return {"type": "grammar", "lhs": "E", "rhs": "E*E", "dprec": null,"prec": null};
+          case "assoc +":
+            return {"type":"assoc", "procedures":["+"]};
+          case "input 1+1":
+            return {"type": "input", "value":"1+1"}
+          case "input 1+2*3":
+            return {"type": "input", "value":"1+2*3"};
+          default:
+            return {};
+        }
+      }
+
+      // Calls Vivian;s earley parser
+      function earleyParse(gramars, input){
+        switch(input) {
+          case "1+1":
+            return {"nodes": [0,1,2,3], "edges":[[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->1"], [0,3,"E->E+E"]]};
+          case "1+2*3":
+            return {"nodes": nodelist, "edges":steplist};
+          default:
+            return {"nodes": [], "edges":[]};
+        }
+      }
+
+      
+      var nodelist = [0, 1, 2, 3, 4, 5];
+      var initEdgeList = [[0,1,"1"], [1,2,"+"], [2,3,"2"], [3,4,"*"], [4,5,"3"]];
+      var steplist = [[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->2"], [4,5,"E->Id"], [4,5,"Id->3"], [0,3,"E->E+E"], [2,5,"E->E*E"], [0,5,"E->E+E"], [0,5,"E->E*E"]];
+      var nowgraph = new Graph([], [], []);      
+    </script>
+
+    <!-- Temporarily textbox for user input -->
+    <div style="padding:16px;">
+      Magic Spell : <input type="textbox" id="userinput" value="input 1+2*3"></input>
+    </div>
+    <button id="Get">Do Magic!</button> 
+    
+    <script>
+
+      function setupTextBox(){
+        $("button:#Get").click(function () {
+          handleUserInput($('#userinput').val());
+        });
+      }
+
+      $(document).ready(setupTextBox);
+
+    </script>
+
+  </body>
+
+</html>

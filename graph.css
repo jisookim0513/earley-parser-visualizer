@@ -1,0 +1,20 @@
+    .xaxis path,
+    .xaxis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+    .xaxis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
+    .yaxis path,
+    .yaxis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+    .yaxis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
