@@ -42,7 +42,7 @@
           var grammars = obj.grammars;
           var input = obj.input;
           var earleyResult = earleyParse(grammars, input);
-          nowgraph = new Graph( earleyResult.edges, earleyResult.nodes, []);
+          nowgraph = new Graph(earleyResult.edges, earleyResult.nodes, earleyResult.initEdges);
           drawGraph(nowgraph);
         }
 
@@ -70,14 +70,13 @@
       function earleyParse(gramars, input){
         switch(input) {
           case "1+1":
-            return {"nodes": [0,1,2,3], "edges":[[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->1"], [0,3,"E->E+E"]]};
+            return {"nodes": [0,1,2,3], "edges": [[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->1"], [0,3,"E->E+E"]], "initEdges": [[0,1,"1"], [1,2,"+"], [2,3,"1"]]};
           case "1+2*3":
-            return {"nodes": nodelist, "edges":steplist};
+            return {"nodes": nodelist, "edges": steplist, "initEdges": initEdgeList};
           default:
             return {"nodes": [], "edges":[]};
         }
       }
-
       
       var nodelist = [0, 1, 2, 3, 4, 5];
       var initEdgeList = [[0,1,"1"], [1,2,"+"], [2,3,"2"], [3,4,"*"], [4,5,"3"]];
