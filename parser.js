@@ -12,6 +12,7 @@
  * }
  * assoc left +
  * { "type": "assoc", 
+ *	 "direction": "left",
  *   "procedures": ["+"]
  * };
  */
@@ -65,8 +66,28 @@
  	} else {
  		ast["rhs"] = byArrow[1];
  	}
+ 	return ast;
  }
 
  function handleAssoc(text, ast){
-
+ 	var bySpace = text.split(" ");
+ 	ast["direction"] = bySpace[0];
+ 	var rest = text.substring(5, text.length);
+ 	if (ast.direction == "right") {
+ 		rest = text.substring(6, text.length);
+ 	}
+ 	if (ast.direction != "left" and ast.direction != "right") {
+ 		alert("Association direction can only be either left or right!");
+ 		throw new ExecError("Association direction can only be either left or right!"); 		
+ 	}
+ 	var byComma = rest.split(",");
+ 	var procs = [];
+ 	for (i = 0; i < byComma.length; i++) {
+ 		if (byComma[i] != " ") {
+ 			procs.push(byComma[i]);
+ 		}
+ 	}
+ 	ast["procedures"] = procs;
+ 	return ast;
  }
+ 
