@@ -66,6 +66,7 @@ function eval(ast) {
 			var operator = ast.prec;
 			if (operator){
 				if (! (operator in assocs)) {
+					alert("Declaring precedence with unknown operator: " + operator);
 					throw new ExecError("Declaring precedence with unknown operator: " + operator);
 				}
 				var prec = assocs[operator];
@@ -87,6 +88,7 @@ function eval(ast) {
 			for (i = 0; i < operators.length; i++) {
 				var operator = operators[i];
 				if (assocs[operator]) {
+					alert("Associativity/precedence already declared: " + operator);
 					throw new ExecError("Associativity/precedence already declared: " + operator);
 				}
 				assocs[operator] = precLevel;
