@@ -37,6 +37,7 @@
  			break;
 
  		default: 
+ 			alert("Unknown input type: " + splited[0]);
 			throw new ExecError("Unknown input type: " + splited[0]);
 			break;
  	}
@@ -48,10 +49,15 @@
  	ast["prec"] = null;
  	var byArrow = text.split("->");
  	ast["lhs"] = byArrow[0];
- 	if (byArrow[1].indexOf("%dprec") > -1) {
+ 	var dprecIndex = byArrow[1].indexOf("%dprec");
+ 	var precIndex = byArrow[1].indexOf("%prec");
+ 	if (dprecIndex > -1) {
 
- 	} else if (byArrow[1].indexOf("%prec") > -1) {
- 		
+ 	} else if (precIndex > -1) {
+
+ 	} else if (dprecIndex > -1 && precIndex > -1)
+ 		alert("Can't have %dprec and %prec at the same time!");
+ 		throw new ExecError("Can't have %dprec and %prec at the same time!");
  	} else {
  		ast["rhs"] = byArrow[1];
  	}
