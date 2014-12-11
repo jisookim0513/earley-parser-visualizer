@@ -56,7 +56,7 @@
           case "grammar E -> E*E":
             return {"type": "grammar", "lhs": "E", "rhs": "E*E", "dprec": null,"prec": null};
           case "assoc +":
-            return {"type":"assoc", "procedures":["+"]};
+            return {"type":"assoc", "direction": "left", "procedures":["+"]};
           case "input 1+1":
             return {"type": "input", "value":"1+1"}
           case "input 1+2*3":

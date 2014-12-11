@@ -10,7 +10,7 @@
  *   “dprec” : null,
  *   “prec”: null,
  * }
- * assoc +
+ * assoc left +
  * { "type": "assoc", 
  *   "procedures": ["+"]
  * };
@@ -44,7 +44,19 @@
  }
 
  function handleGrammar(text, ast){
+ 	ast["deprec"] = null;
+ 	ast["prec"] = null;
+ 	var byArrow = text.split("->");
+ 	ast["lhs"] = byArrow[0];
+ 	if (byArrow[1].indexOf("%dprec") > -1) {
 
+ 	} else if (byArrow[1].indexOf("%prec") > -1) {
+ 		
+ 	} else {
+ 		ast["rhs"] = byArrow[1];
+ 	}
+ 	var byDprec = byArrow.split("%deprec");
+ 	var byPrec = byArrow.split("%prec");
  }
 
  function handleAssoc(text, ast){
