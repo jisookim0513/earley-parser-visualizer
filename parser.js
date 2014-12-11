@@ -45,24 +45,26 @@
  }
 
  function handleGrammar(text, ast){
- 	ast["deprec"] = null;
+ 	ast["dprec"] = null;
  	ast["prec"] = null;
  	var byArrow = text.split("->");
  	ast["lhs"] = byArrow[0];
  	var dprecIndex = byArrow[1].indexOf("%dprec");
  	var precIndex = byArrow[1].indexOf("%prec");
  	if (dprecIndex > -1) {
-
+ 		var byDprec = byArrow[1].split("%dprec");
+ 		ast["rhs"] = byDprec[0];
+ 		ast["dprec"] = byDprec[1];
  	} else if (precIndex > -1) {
-
+ 		var byPrec = byArrow[1].split("%prec");
+ 		ast["rhs"] = byPrec[0];
+ 		ast["prec"] = byPrec[1];
  	} else if (dprecIndex > -1 && precIndex > -1)
  		alert("Can't have %dprec and %prec at the same time!");
  		throw new ExecError("Can't have %dprec and %prec at the same time!");
  	} else {
  		ast["rhs"] = byArrow[1];
  	}
- 	var byDprec = byArrow.split("%deprec");
- 	var byPrec = byArrow.split("%prec");
  }
 
  function handleAssoc(text, ast){
