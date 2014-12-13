@@ -79,7 +79,7 @@ function eval(ast) {
 
 		case "assoc":
 			var operators = ast.operators;
-			var assoc = ast.assoc;
+			var assoc = ast.direction;
 			var precLevel = assocs.counter + 1;
 			assocs.counter += 1;
 			for (i = 0; i < operators.length; i++) {

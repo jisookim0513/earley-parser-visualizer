@@ -102,7 +102,6 @@ function stepForward(nowGraph){
       console.log("Current is  " + nowGraph.current)
   }
 };
-    
 
 var circleDist = 200;
 var circleY = 100;

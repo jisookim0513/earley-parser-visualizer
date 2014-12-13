@@ -10,6 +10,11 @@
     <style src="graph.css"></style>
   </head>
   <div id='root'></div>
+    <!-- Temporarily textbox for user input -->
+  <div id='inputline' style="font-family: sans-serif; font-size: 12px;">
+    Enter your input here : <input type="textbox" id="userinput" value="input 1+2*3" style="width: 600px"></input>
+    <button id="Get">Enter</button> 
+  </div>
   <body>
     <script type="text/javascript" src="graph.js"></script>
     <script type="text/javascript" src="interpreter.js"></script>
@@ -22,7 +27,7 @@
       var circleDist = 150;
       var svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
 
-      var root = d3.select('#root')
+      var root = d3.select('#inputline')
       
       // creates a back button that calls stepBack with nowgraph
       root.append('button')
@@ -42,7 +47,7 @@
           var grammars = obj.grammars;
           var input = obj.input;
           var earleyResult = earleyParse(grammars, input);
-          nowgraph = new Graph( earleyResult.edges, earleyResult.nodes, []);
+          nowgraph = new Graph(earleyResult.edges, earleyResult.nodes, earleyResult.initEdges);
           drawGraph(nowgraph);
         }
 
@@ -56,7 +61,7 @@
           case "grammar E -> E*E":
             return {"type": "grammar", "lhs": "E", "rhs": "E*E", "dprec": null,"prec": null};
           case "assoc +":
-            return {"type":"assoc", "assoc":"left", "procedures":["+"]};
+            return {"type": "assoc", "direction": "left", "procedures":["+"]};
           case "input 1+1":
             return {"type": "input", "value":"1+1"}
           case "input 1+2*3":
@@ -70,26 +75,19 @@
       function earleyParse(gramars, input){
         switch(input) {
           case "1+1":
-            return {"nodes": [0,1,2,3], "edges":[[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->1"], [0,3,"E->E+E"]]};
+            return {"nodes": [0,1,2,3], "edges": [[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->1"], [0,3,"E->E+E"]], "initEdges": [[0,1,"1"], [1,2,"+"], [2,3,"1"]]};
           case "1+2*3":
-            return {"nodes": nodelist, "edges":steplist};
+            return {"nodes": nodelist, "edges": steplist, "initEdges": initEdgeList};
           default:
             return {"nodes": [], "edges":[]};
         }
       }
-
       
       var nodelist = [0, 1, 2, 3, 4, 5];
       var initEdgeList = [[0,1,"1"], [1,2,"+"], [2,3,"2"], [3,4,"*"], [4,5,"3"]];
       var steplist = [[0,1,"E->Id"], [0,1,"Id->1"], [2,3,"E->Id"], [2,3,"Id->2"], [4,5,"E->Id"], [4,5,"Id->3"], [0,3,"E->E+E"], [2,5,"E->E*E"], [0,5,"E->E+E"], [0,5,"E->E*E"]];
       var nowgraph = new Graph([], [], []);      
     </script>
-
-    <!-- Temporarily textbox for user input -->
-    <div style="padding:16px;">
-      Magic Spell : <input type="textbox" id="userinput" value="input 1+2*3"></input>
-    </div>
-    <button id="Get">Do Magic!</button> 
     
     <script>
 
