@@ -22,6 +22,15 @@
        float:left;
        padding-left:20px;
     }
+
+    #syntax-guide {
+        width:w; 
+        height:h; 
+        float:left;
+        border:1px solid #d4d4d4;
+        padding-right:10px;
+        margin-left:60px;     
+    }
     </style>
   </head>
   <div id='root'></div>
@@ -37,10 +46,50 @@
   </div>
 
   <div id="right">
-      <ul id="assocs">
+      <ul id="assocs" style="font-family: sans-serif; font-size: 12px;">
         <li>M</li>
       </ul>
-    <div id="grammars">
+    <div id="grammars" style="font-family: sans-serif; font-size: 12px;">
+    </div>
+  </div>
+
+  <div id="syntax-guide">
+    <div id="grammar" style="font-family: sans-serif; font-size: 12px;">
+      <ul>
+        <li>This program only supports three identifiers
+          <ul>
+            <li>grammar: grammar E -> V</li>
+            <li>input: input 2+3+4</li>
+            <li>assoc: assoc left +</li>
+          </ul>
+        </li>
+        <li> You should always put a space between identifier and context
+          <ul>
+            <li>e.g. grammar E -> V &nbsp; &#10003;</li>
+            <li>e.g. grammarE -> V &nbsp;&nbsp; &#x2717;</li>
+          </ul>
+        </li>
+        <li> You should always put a space between the arrow and <br>each side of grammar
+          <ul>
+            <li>e.g. grammar E -> V &nbsp; &#10003;</li>
+            <li>e.g. grammar E->V &nbsp;&nbsp;&nbsp; &#x2717;</li>
+          </ul>
+        </li>
+        <li> You can use %prec and %dprec as following <br>(don't forget space!):
+          <ul>
+            <li>e.g. grammar E -> V %dprec 1 &nbsp; &#10003;</li>
+            <li>e.g. grammar E -> V %dprec1  &nbsp;&nbsp; &#x2717;</li>
+            <li>e.g. grammar E -> V%dprec 1  &nbsp;&nbsp; &#x2717;</li>
+          </ul>
+        </li>
+        <li> For assoc, you can have multiple procedures for the same tier:
+          <ul>
+            <li>e.g. assoc left +,!,- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#10003;</li>
+            <li>e.g. assoc right +, !, - &nbsp; &#10003;</li>
+            <li>e.g. assoc left +!-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#x2717;</li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </div>
 
