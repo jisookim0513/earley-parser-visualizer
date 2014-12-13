@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Penguins are the cutest!</title>
+	</head>
+	<script src="../parser.js"></script>
+	<script type="text/javascript" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+	<script>
+	
+	function testGrammar(){
+		var input1 = "grammar E -> V";
+		var expected1 = {"type": "grammar", "lhs": "E", "rhs": "V", "dprec": null, "prec": null};
+		var input2 = "grammar E -> V %dprec 2";
+		var expected2 = {"type": "grammar", "lhs": "E", "rhs": "V", "dprec": 2, "prec": null};
+		var input3 = "grammar E -> V %prec .";
+		var expected3 = {"type": "grammar", "lhs": "E", "rhs": "V", "dprec": null, "prec": "."};
+		assertEquals(expected1, parseInput(input1));
+		assertEquals(expected2, parseInput(input2));
+		assertEquals(expected3, parseInput(input3));
+	}
+
+	function testInput(){
+		var input = "input 1+3+2";
+		var expected = {"type": "input", "value": "1+3+2"};
+		assertEquals(expected, parseInput(input));
+	}
+
+	function testAssoc(){
+		var input1 = "assoc left +";
+		var expected1 = {"type": "assoc", "direction": "left", "procedures": ["+"]};
+		var input2 = "assoc right !";
+		var expected2 = {"type": "assoc", "direction": "right", "procedures": ["!"]};
+		var input3 = "assoc left +,-,!"
+		var expected3 = {"type": "assoc", "direction": "left", "procedures": ["+","-","!"]};		
+		assertEquals(expected1, parseInput(input1));
+		assertEquals(expected2, parseInput(input2));
+		assertEquals(expected3, parseInput(input3));
+
+	}
+
+	function assertEquals(expected, actual){
+		if (!_.isEqual(expected, actual)) {
+			console.log(expected);
+			console.log(actual);
+			throw new Error("Not equal: " + expected + ", " + actual);
+		}
+	}
+
+	testGrammar();
+	testInput();
+	testAssoc();
+	
+	console.log("All tests pass!");
+	</script>
+</html>
