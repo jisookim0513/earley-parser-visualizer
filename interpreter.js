@@ -20,6 +20,29 @@ function Grammar(lhs, rhs){
 	return lhs + " - > " + rhs;
 }
 
+//Adds grammar
+function addGrammar(lhs, rhs){
+	if (lhs in grammars) {
+		if (! (rhs in grammars[lhs])){
+			grammars[lhs].push(rhs);
+		} else {
+			throw new ExecError("Grammar declared previously");
+		}
+	} else {
+		grammars[lhs] = [rhs];
+	}
+}
+
+
+function addDPrec(grammar, dprec){
+	console.log(dprec);
+	if (dprec > 0) {
+		dprecs[grammar] = dprec;
+	} else {
+		throw new ExecError("Illegal precedence: " + dprec);
+	}
+}
+
 // Returns associtivaity of operator. either "left" or "right"
 function getOpAssoc(op){
 	if (op in assocs) {
@@ -51,23 +74,19 @@ function eval(ast) {
 			var lhs = ast.lhs;
 			var rhs = ast.rhs;
 			var grammar = Grammar(lhs,rhs);
-			if (lhs in grammars) {
-				grammars[lhs].push(rhs);
-			} else {
-				grammars[lhs] = [rhs];
-			}
+			addGrammar(lhs, rhs);
 
 			//Adds dprec of this grammar if it exists
 			var dprec = ast.dprec;
-			if(dprec) {
-				dprecs[grammar] = dprec;
+			if (dprec != null){
+				addDPrec(grammar, dprec);
 			}
 
 			// Adds dprec based on operator's precendence
 			var operator = ast.prec;
-			if (operator){
+			if (operator != null){
 				var prec = getOpPrec(operator);
-				dprecs[grammar] = prec;
+				addDPrec(grammar, prec);
 			} 
 			return null;
 			break;
