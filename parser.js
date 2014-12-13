@@ -38,7 +38,6 @@
  			break;
 
  		default: 
- 			alert("Unknown input type: " + splited[0]);
 			throw new ExecError("Unknown input type: " + splited[0]);
 			break;
  	}
@@ -61,7 +60,6 @@
  		ast["rhs"] = byPrec[0].substring(1, byPrec[0].length-1);
  		ast["prec"] = byPrec[1].substring(1, byPrec[1].length);
  	} else if (dprecIndex > -1 && precIndex > -1) {
- 		alert("Can't have %dprec and %prec at the same time!");
  		throw new ExecError("Can't have %dprec and %prec at the same time!");
  	} else {
  		ast["rhs"] = byArrow[1].substring(1, byArrow[1].length);
@@ -77,7 +75,6 @@
  		rest = text.substring(6, text.length);
  	}
  	if (ast.direction != "left" && ast.direction != "right") {
- 		alert("Association direction can only be either left or right!");
  		throw new ExecError("Association direction can only be either left or right!"); 		
  	}
  	var byComma = rest.split(",");
