@@ -97,8 +97,8 @@ function eval(ast) {
 			break;
 
 		case "assoc":
-			var operators = ast.operators;
-			var assoc = ast.direction;
+			var operators = ast.procedures;
+			var direction = ast.direction;
 			var precLevel = assocs.counter + 1;
 			assocs.counter += 1;
 			for (i = 0; i < operators.length; i++) {
@@ -106,7 +106,7 @@ function eval(ast) {
 				if (operator in assocs) {
 					throw new ExecError("Associativity/precedence already declared: " + operator);
 				}
-				assocs[operator] = [precLevel, assoc];
+				assocs[operator] = [precLevel, direction];
 			}
 			return null
 			break;
