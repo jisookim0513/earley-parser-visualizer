@@ -18,13 +18,13 @@
  */
 
  // handles only Grammar, Input, and Assoc for now
- function parse(text){
+ function parseInput(text){
  	var ast = {}
  	var splited = text.split(" ");
  	switch(splited[0].toLowerCase()) {
  		case "grammar":
  			ast["type"] = "grammar";
- 			ast = handleGrammar(text.substring(7, text.length), ast);
+ 			ast = handleGrammar(text.substring(8, text.length), ast);
  			break;
 
  		case "input":
@@ -38,7 +38,6 @@
  			break;
 
  		default: 
- 			alert("Unknown input type: " + splited[0]);
 			throw new ExecError("Unknown input type: " + splited[0]);
 			break;
  	}
@@ -49,22 +48,21 @@
  	ast["dprec"] = null;
  	ast["prec"] = null;
  	var byArrow = text.split("->");
- 	ast["lhs"] = byArrow[0];
+ 	ast["lhs"] = (byArrow[0].split(" "))[0];
  	var dprecIndex = byArrow[1].indexOf("%dprec");
  	var precIndex = byArrow[1].indexOf("%prec");
  	if (dprecIndex > -1) {
  		var byDprec = byArrow[1].split("%dprec");
- 		ast["rhs"] = byDprec[0];
- 		ast["dprec"] = byDprec[1];
+ 		ast["rhs"] = byDprec[0].substring(1, byDprec[0].length-1);
+ 		ast["dprec"] = parseInt(byDprec[1]);
  	} else if (precIndex > -1) {
  		var byPrec = byArrow[1].split("%prec");
- 		ast["rhs"] = byPrec[0];
- 		ast["prec"] = byPrec[1];
- 	} else if (dprecIndex > -1 && precIndex > -1)
- 		alert("Can't have %dprec and %prec at the same time!");
+ 		ast["rhs"] = byPrec[0].substring(1, byPrec[0].length-1);
+ 		ast["prec"] = byPrec[1].substring(1, byPrec[1].length);
+ 	} else if (dprecIndex > -1 && precIndex > -1) {
  		throw new ExecError("Can't have %dprec and %prec at the same time!");
  	} else {
- 		ast["rhs"] = byArrow[1];
+ 		ast["rhs"] = byArrow[1].substring(1, byArrow[1].length);
  	}
  	return ast;
  }
@@ -76,8 +74,7 @@
  	if (ast.direction == "right") {
  		rest = text.substring(6, text.length);
  	}
- 	if (ast.direction != "left" and ast.direction != "right") {
- 		alert("Association direction can only be either left or right!");
+ 	if (ast.direction != "left" && ast.direction != "right") {
  		throw new ExecError("Association direction can only be either left or right!"); 		
  	}
  	var byComma = rest.split(",");
