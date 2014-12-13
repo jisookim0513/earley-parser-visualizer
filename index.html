@@ -15,6 +15,9 @@
     Enter your input here : <input type="textbox" id="userinput" value="input 1+2*3" style="width: 600px"></input>
     <button id="Get">Enter</button> 
   </div>
+  <div style="font-family: sans-serif; font-size: 18px;">
+    <p id="errormessage" style="color: #ff0000;">mAGIKAPR</p>
+  </div>
   <body>
     <script type="text/javascript" src="graph.js"></script>
     <script type="text/javascript" src="interpreter.js"></script>
@@ -37,12 +40,17 @@
       // creates a forward button that calls stepForward with nowgraph
       root.append('button')
         .text('Forward')
-        .on('click', function() { console.log(nowgraph);stepForward(nowgraph); });
+        .on('click', function() { stepForward(nowgraph); });
 
       // Receive input from REPL, parse it into AST
       function handleUserInput(text){
         var ast = parse(text);
-        var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
+        try {
+          var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
+          setErrorMessage("");
+        } catch (err){
+          setErrorMessage(err.message);
+        }
         if (obj){
           var grammars = obj.grammars;
           var input = obj.input;
@@ -66,6 +74,8 @@
             return {"type": "input", "value":"1+1"}
           case "input 1+2*3":
             return {"type": "input", "value":"1+2*3"};
+          case "grammar E->E dprec 1":
+            return {"type": "grammar", "lhs":"E", "rhs":"E", "dprec": -1};
           default:
             return {};
         }
@@ -90,6 +100,10 @@
     </script>
     
     <script>
+      function setErrorMessage(msg){
+        document.getElementById("errormessage").innerHTML = msg;
+      }
+
 
       function setupTextBox(){
         $("button:#Get").click(function () {
