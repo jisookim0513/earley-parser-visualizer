@@ -37,7 +37,7 @@
     <!-- Temporarily textbox for user input -->
   <div id="left">
     <div id='inputline' style="font-family: sans-serif; font-size: 12px;">
-      Enter your input here : <input type="textbox" id="userinput" value="input 1+2*3" style="width: 600px"></input>
+      Enter your input here : <input type="textbox" id="userinput" value="assoc left +" style="width: 600px"></input>
       <button id="Get">Enter</button> 
     </div>
     <div style="font-family: sans-serif; font-size: 18px;">
@@ -46,11 +46,12 @@
   </div>
 
   <div id="right">
+    <p>Assocs</p>
       <ul id="assocs" style="font-family: sans-serif; font-size: 12px;">
-        <li>M</li>
       </ul>
-    <div id="grammars" style="font-family: sans-serif; font-size: 12px;">
-    </div>
+    <p>Grammars</p>
+      <ul id="grammars" style="font-family: sans-serif; font-size: 12px;">
+      </ul>
   </div>
 
   <div id="syntax-guide">
@@ -125,12 +126,13 @@
         try {
           var ast = parse(text);
           var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
+          displayGrammar(ast.type, text);
           setErrorMessage("");
         } catch (err){
           setErrorMessage(err.message);
         }
         if (obj){
-          var grammars = obj.grammars;
+          var grammars = marshalGrammar(obj.grammars);
           var input = obj.input;
           var earleyResult = earleyParse(grammars, input);
           nowgraph = new Graph(earleyResult.edges, earleyResult.nodes, earleyResult.initEdges);
@@ -143,6 +145,27 @@
       function parse(text){
         console.log(parseInput(text));
         return parseInput(text);
+      }
+
+      // Returns a new format of a grammar as an AST
+      function marshalGrammar(grammars){
+        var marshalled = [];
+        for (lhs in grammars){
+          var rhses = grammars[lhs];
+          for (i in rhses){
+            var rhs = rhses[i];
+            var prec = null;
+            if (Grammar(lhs, rhs) in dprecs){
+              prec = dprecs[Grammar(lhs,rhs)];
+            }
+            var newGrammar = {};
+            newGrammar["lhs"] = lhs;
+            newGrammar["rhs"] = rhs;
+            newGrammar["prec"] = prec;
+            marshalled.push(newGrammar);
+          }
+        }
+        return marshalled;
       }
 
       // Calls Vivian;s earley parser
@@ -168,12 +191,22 @@
         document.getElementById("errormessage").innerHTML = msg;
       }
 
-      function displayAssocs(){ 
-        var elements = [];
-        $.each(data, function(i, item) {
-          items.push('<li><a href="yourlink?id=' + item.UserID + '">' + item.Username + '</a></li>');
-         });  // close each()
-        $('#right > #assocs').add("BITCH");
+      var assocText = [];
+      var grammarText = [];
+      function displayGrammar(type, text){
+        switch (type){
+          case "grammar":
+            grammarText.push(text);
+            items = [];
+            $('#right > #grammars').append('<li>' + text + '</li>');
+            break;
+
+          case "assoc":
+            assocText.push(text);
+            items = [];
+            $('#right > #assocs').append('<li>' + text + '</li>');
+            break;
+        }
       }
 
       function setupTextBox(){
