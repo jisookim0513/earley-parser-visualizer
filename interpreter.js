@@ -1,7 +1,7 @@
 // Interpreter that takes in an AST from Jison
 // Keeps track of grammara and input that will be passed in to the Earley parser
 
-var grammars = {};
+var grammars = {"assoc": {}};
 // Key is string representing binary operator. Value is an array. 
 //First element int, presenting the operator's priority. 
 //Second element "left" or "right" which is the associtiavity
@@ -26,7 +26,6 @@ function addGrammar(grammar){
 	var rhs = grammar.rhs;
 	var dprec = grammar.dprec;
 	if (lhs in grammars) {
-		console.log(rhs);
 		var skip = false;
 		for (i=0; i<grammars[lhs].length; i++) {
 			if (grammars[lhs][i]["rhs"] == rhs["rhs"] && grammars[lhs][i]["dprec"] != rhs["dprec"]) {
@@ -42,7 +41,6 @@ function addGrammar(grammar){
 	} else {
 		grammars[lhs] = [rhs];
 	}
-	console.log(grammars)
 }
 
 
@@ -119,6 +117,8 @@ function eval(ast) {
 				}
 				assocs[operator] = [precLevel, direction];
 			}
+			grammars["assoc"] = assocs;
+			console.log(grammars);
 			return null
 			break;
 
