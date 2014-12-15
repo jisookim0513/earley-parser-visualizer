@@ -10,27 +10,27 @@
     <style src="graph.css"></style>
     <style>
     #left { 
-       width:w; 
-       height:h; 
+       width:62%; 
+       height:100%; 
        float:left; 
        padding-top:10px;
     }
 
     #right { 
-       width:w; 
-       height:h; 
+       width:13%; 
+       height:100%; 
        float:left;
        padding-left:20px;
     }
 
     #syntax-guide {
-        width:w; 
-        height:h; 
+        width:17%; 
+        height:100%; 
         float:left;
         border:1px solid #d4d4d4;
         padding-right:10px;
         padding-left:20px;
-        margin-left:60px;     
+        margin-left:0px;     
     }
 
     ul {
@@ -109,10 +109,10 @@
       //the current graph being displayed
 
       // width and height of svg
-      var w = 1024;
+      var w = parseFloat(d3.select("#left").style("width").substring(0, d3.select("#left").style("width").length-2));
       var h = 400;
       var circleDist = 150;
-      var svg = d3.select("body").append("svg").attr("width", w).attr("height", h);
+      var svg = d3.select("#left").append("svg").attr("width", w).attr("height", h);
 
       var root = d3.select('#inputline')
       
