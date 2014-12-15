@@ -131,6 +131,7 @@ function drawGraph(graph){
 function drawNodes(graph){
 var svg = d3.select('body').select('svg');
 var circles = svg.selectAll("circle").data(graph.nodes).enter().append("circle");
+circleDist = parseInt(svg.style("width").substring(0,svg.style("width").length-2)) / (graph.nodes).length;
 circles.style("opacity",0)
        .transition().duration(100)
        .style("opacity", 1)
