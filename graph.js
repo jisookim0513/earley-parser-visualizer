@@ -121,6 +121,7 @@ var curved = d3.svg.line()
 
 function drawGraph(graph){
   var svg = d3.select('body').select('svg');
+  //circleDist = svg.style("width")/graph.nodes.length;
   console.log("cleaning up svg");
   svg.html(""); //Cleans SVG
   drawNodes(graph);
