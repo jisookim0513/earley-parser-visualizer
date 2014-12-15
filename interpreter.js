@@ -23,7 +23,8 @@ function Grammar(lhs, rhs){
 //Adds grammar
 function addGrammar(lhs, rhs){
 	if (lhs in grammars) {
-		if (! (rhs in grammars[lhs])){
+		console.log(rhs);
+		if (grammars[lhs].indexOf(rhs) == -1){
 			grammars[lhs].push(rhs);
 		} else {
 			throw new ExecError("Grammar declared previously");
@@ -74,6 +75,7 @@ function eval(ast) {
 			var lhs = ast.lhs;
 			var rhs = ast.rhs;
 			var grammar = Grammar(lhs,rhs);
+			console.log(grammar);
 			addGrammar(lhs, rhs);
 
 			//Adds dprec of this grammar if it exists
