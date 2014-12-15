@@ -142,9 +142,8 @@
           setErrorMessage(err.message);
         }
         if (obj){
-          var grammars = marshalGrammar(obj.grammars);
           var input = obj.input;
-          var earleyResult = earleyParse(grammars, input);
+          var earleyResult = earleyParse(obj.grammars, input);
           nowgraph = new Graph(earleyResult.edges, earleyResult.nodes, earleyResult.initEdges);
           drawGraph(nowgraph);
         }
