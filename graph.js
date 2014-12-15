@@ -105,7 +105,7 @@ function stepForward(nowGraph){
 
 var circleDist = 200;
 var circleY = 100;
-var lineMarginX = 17;
+var lineMarginX = 10;
 var lineMarginY = 10;
 var lineMarginBetweenSteps = 20;
 var textMarginX = -10;
@@ -135,9 +135,9 @@ circleDist = parseInt(svg.style("width").substring(0,svg.style("width").length-2
 circles.style("opacity",0)
        .transition().duration(100)
        .style("opacity", 1)
-       .attr("cx", function(d,i){ return i*circleDist + 100})
+       .attr("cx", function(d,i){ return i*circleDist + 30})
        .attr("cy", function(d,i){ return circleY;})
-       .attr("r", 20)
+       .attr("r", 15)
        .attr("fill", "skyblue");
 }
 
@@ -147,10 +147,10 @@ var edges = svg.selectAll("line").data(graph.initEdges).enter().append("line");
 var labels = svg.selectAll("text[id=init-label]").data(graph.initEdges).enter().append("text");
 edges.style("opacity",0)
      .transition().duration(100)
-     .style("opacity", 1)
-     .attr("x1", function(d){ return getEdgeSource(d)*circleDist+100+lineMarginX; })
+     .style("opacity", 0.5)
+     .attr("x1", function(d){ return getEdgeSource(d)*circleDist+30+lineMarginX+5; })
      .attr("y1", circleY)
-     .attr("x2", function(d){ return getEdgeDest(d)*circleDist+100-lineMarginX; })
+     .attr("x2", function(d){ return getEdgeDest(d)*circleDist+30-lineMarginX-5; })
      .attr("y2", circleY)
      .attr("stroke-width", 1)
      .attr("stroke", "grey");
@@ -159,7 +159,7 @@ labels.style("opacity", 0)
       .transition().duration(100)
       .style("opacity", 1)
       .attr("id", "init-label")
-      .attr("x", function(d){ return ((getEdgeSource(d)+getEdgeDest(d))*circleDist+180+2*lineMarginX)/2+textMarginX; })
+      .attr("x", function(d){ return ((getEdgeSource(d)+getEdgeDest(d))*circleDist+30+2*lineMarginX)/2+textMarginX; })
       .attr("y", circleY+textMarginY)
       .text(function(d){ return getEdgeDesc(d); })
       .attr("font-family", "sans-serif")
@@ -184,12 +184,12 @@ function animate(oldGraph, newGraph){
   var src = getEdgeSource(edgeToAdd);
   var dest = getEdgeDest(edgeToAdd);
   var diff = dest - src - 1;
-  var x1 = src*circleDist + 100 + lineMarginX;
-  var x2 = dest*circleDist + 100 - lineMarginX;
+  var x1 = src*circleDist + 30 + lineMarginX;
+  var x2 = dest*circleDist + 30 - lineMarginX;
   svg.append("path")
      .style("opacity", 0)
      .transition().duration(100)
-     .style("opacity", 1)
+     .style("opacity", 0.5)
      .attr("d", curved([{x:x1, y:circleY+lineMarginY}, {x:(x1+x2)/2,y:nodeHeight+lineMarginBetweenSteps*(numEdges+diff)},{x:x2,y:circleY+lineMarginY}]))
      .style("stroke", "darkgrey").style("fill", "none");
 

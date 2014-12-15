@@ -10,22 +10,24 @@
     <style src="graph.css"></style>
     <style>
     #left { 
+       border:1px solid #d4d4d4;
        width:62%; 
-       height:100%; 
+       height:700px; 
        float:left; 
        padding-top:10px;
     }
 
     #right { 
+       border:1px solid #d4d4d4;
        width:13%; 
-       height:100%; 
+       height:710px; 
        float:left;
        padding-left:20px;
     }
 
     #syntax-guide {
-        width:17%; 
-        height:100%; 
+        width:20%; 
+        height:710px; 
         float:left;
         border:1px solid #d4d4d4;
         padding-right:10px;
@@ -41,11 +43,11 @@
   <div id='root'></div>
     <!-- Temporarily textbox for user input -->
   <div id="left">
-    <div id='inputline' style="font-family: sans-serif; font-size: 12px;">
-      Enter your input here : <input type="textbox" id="userinput" value="assoc left +" style="width: 600px"></input>
+    <div id='inputline' style="font-family: sans-serif; font-size: 12px; height=50px; padding-left:15px;">
+      Enter your input here : <input type="textbox" id="userinput" value="assoc left +" style="width: 570px"></input>
       <button id="Get">Enter</button> 
     </div>
-    <div style="font-family: sans-serif; font-size: 18px;">
+    <div style="font-family: sans-serif; font-size: 18px; height=50px;">
       <p id="errormessage" style="color: #ff0000;"></p>
     </div>
   </div>
@@ -62,7 +64,7 @@
   <div id="syntax-guide">
     <div id="grammar" style="font-family: sans-serif; font-size: 12px;">
       <ul>
-        <li>This program only supports three identifiers
+        <li>This program supports three identifiers for input:
           <ul>
             <li>grammar: grammar E -> V</li>
             <li>input: input 2+3+4</li>
@@ -75,18 +77,18 @@
             <li>e.g. grammarE -> V &nbsp;&nbsp; &#x2717;</li>
           </ul>
         </li>
-        <li> You should always put a space between the arrow and <br>each side of grammar
+        <li> You should always put a space between the arrow and each side of grammar
           <ul>
             <li>e.g. grammar E -> V &nbsp; &#10003;</li>
             <li>e.g. grammar E->V &nbsp;&nbsp;&nbsp; &#x2717;</li>
           </ul>
         </li>
-        <li> You can use %prec and %dprec as following <br>(don't forget space!):
+        <li> You can use %prec and %dprec as following (don't forget space!):
           <ul>
             <li>e.g. grammar E -> V %dprec 1 &nbsp; &#10003;</li>
             <li>e.g. grammar E -> V %dprec1  &nbsp;&nbsp; &#x2717;</li>
             <li>e.g. grammar E -> V%dprec 1  &nbsp;&nbsp; &#x2717;</li>
-            <li>e.g. grammar E -> V %prec ! &nbsp; &#10003;</li>
+            <li>e.g. grammar E -> V %prec ! &nbsp;&nbsp;&nbsp; &#10003;</li>
             <li>e.g. grammar E -> V %prec '!' &nbsp;&nbsp; &#x2717;</li>
           </ul>
         </li>
@@ -97,6 +99,7 @@
             <li>e.g. assoc left +!-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#x2717;</li>
           </ul>
         </li>
+        <li> For grammar, always <b>put starting terminal in the very beginning</b>. Whatever you put as the first grammar input will be your starting terminal. </li>
       </ul>
     </div>
   </div>
@@ -110,7 +113,7 @@
 
       // width and height of svg
       var w = parseFloat(d3.select("#left").style("width").substring(0, d3.select("#left").style("width").length-2));
-      var h = 400;
+      var h = 610;
       var circleDist = 150;
       var svg = d3.select("#left").append("svg").attr("width", w).attr("height", h);
 
