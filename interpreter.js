@@ -45,7 +45,6 @@ function addGrammar(grammar){
 
 
 function addDPrec(grammar, dprec){
-	console.log(dprec);
 	if (dprec > 0) {
 		dprecs[grammar] = dprec;
 	} else {

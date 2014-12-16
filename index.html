@@ -156,27 +156,6 @@
         return parseInput(text);
       }
 
-      // Returns a new format of a grammar as an AST
-      function marshalGrammar(grammars){
-        var marshalled = [];
-        for (lhs in grammars){
-          var rhses = grammars[lhs];
-          for (i in rhses){
-            var rhs = rhses[i];
-            var prec = null;
-            if (Grammar(lhs, rhs) in dprecs){
-              prec = dprecs[Grammar(lhs,rhs)];
-            }
-            var newGrammar = {};
-            newGrammar["lhs"] = lhs;
-            newGrammar["rhs"] = rhs;
-            newGrammar["prec"] = prec;
-            marshalled.push(newGrammar);
-          }
-        }
-        return marshalled;
-      }
-
       // Calls Vivian;s earley parser
       function earleyParse(gramars, input){
         switch(input) {
