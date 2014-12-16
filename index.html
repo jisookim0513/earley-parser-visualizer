@@ -45,7 +45,7 @@
     <!-- Temporarily textbox for user input -->
   <div id="left">
     <div id='inputline' style="font-family: sans-serif; font-size: 12px; height=50px;">
-      Enter your input here : <input type="textbox" id="userinput" value="assoc left +" style="width: 570px"></input>
+      Enter your input here : <input type="textbox" id="userinput" value="input 1+1" style="width: 570px"></input>
       <button id="Get">Enter</button> 
     </div>
     <div style="font-family: sans-serif; font-size: 16px; height=50px;">
@@ -180,8 +180,7 @@
 
       // Calls Vivian;s earley parser
       function earleyParse(gramars, input){
-        var gramms = {"E": {"rhs": "Num + E", "dprec": null}, "Num": {"rhs": "/[0-9]+/", "dprec": null}, "S": {"rhs": "E", "dprec": null}, "assoc": {"+": [1, "left"], "counter": 1}};
-        console.log(earleyParseInput(gramms, input))  ;
+        var gramms = {"E": {"rhs": "Num + E", "dprec": null}, "Num": {"rhs": "1", "dprec": null}, "S": {"rhs": "E", "dprec": null}, "assoc": {"+": [1, "left"], "counter": 1}};
         return earleyParseInput(gramms, input);
       }
       

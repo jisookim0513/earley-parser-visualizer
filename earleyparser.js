@@ -5,11 +5,16 @@ function earleyParseInput(grammars, input){
     var nodelist = [];
 
     //initiation
-    for (count = 0; count < input.length - 1; count ++){
+    for (count = 0; count < input.length; count++){
         nodelist.push(count);
-        initEdgeList.push((count, count + 1, input[count]));
-        count = count + 1;
+        initEdgeList.push([count, count + 1, input[count]]);
+        if (count == input.length - 1) {
+            nodelist.push(count+1);
+        }
     }
+
+    console.log(nodelist);
+    console.log(initEdgeList);
 
     var graph = {};
 
@@ -49,14 +54,14 @@ function earleyParseInput(grammars, input){
                 graph[(e[1], 1)] = graph[(e[1], 1)].add(e);
             }
         }
-        
+    
         return (false, true);
     }
     //seeds with all starts  
     for (production in grammars["S"][0]){ //iterates through every RHS that has LHS as "S" (start terminal)
         addEdge((0,0,"S", production, 0));
     }
-    
+
     for (j = 1; j < input.length + 1; j ++){
         if (j > 0){
             for (edgeIndex in edgesIncomingTo(j-1,1)[0]){ //(i, _j, n, rhs, pos)
