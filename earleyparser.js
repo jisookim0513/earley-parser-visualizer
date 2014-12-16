@@ -14,8 +14,6 @@ Key.prototype.toString = function(){
 
 // Used to parse key and return the destination
 function getDestProg(key){
-    console.log(">>>>");
-    console.log(key);
     var dest_prog = key.substring(1, key.length - 1).split(", ");
     return dest_prog;
 }
@@ -97,7 +95,6 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
 
     function edgesIncomingTo(dst,status){
         var key = new Key(dst,status);
-        console.log(key);
         if (key in graph){ //!!! What did Jisoo say? I forgot...
             return graph[key];
         }else{
@@ -132,8 +129,6 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
             edgeList.push(e);
             edgeSet.push(e);
             if(!completeEdgesOnly || (completeEdgesOnly && status === complete)){
-                console.log(completeEdgesOnly);
-                console.log(status);
                 finalEdges.push(e);
             }
             return true;
@@ -271,6 +266,7 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
             console.log("complete edges");
             var edgeList = edgesIncomingTo(dest, comp)[0];
             var edgeSet = edgesIncomingTo(dest, comp)[1];
+            console.log(edgeList);
             for (edgeIndex in edgeList) {
                 var edge = edgeList[edgeIndex];
                 var src = edge.src;

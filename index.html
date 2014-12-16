@@ -153,7 +153,7 @@
         }
         if (obj){
           var input = obj.input;
-          var completeEdgesOnly = root.select('label').select('input')[0][0].checked;
+          var completeEdgesOnly = d3.select('#complete-edge').select('label').select('input')[0][0].checked;
           var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
           console.log(earleyResult);
           var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
@@ -230,9 +230,6 @@
 
       $(document).ready(setupTextBox);
       handleUserInput("grammar S -> E");
-      // handleUserInput("grammar E -> E+E");
-      // handleUserInput("grammar E -> E-E");
-      // handleUserInput("grammar E -> E*E");
       handleUserInput("grammar E -> if ( E ) E");
       handleUserInput("grammar E -> if ( E ) E else E");
       handleUserInput("grammar E -> a");

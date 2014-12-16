@@ -103,7 +103,6 @@ function eval(ast) {
 
 			// Adds to this grammar
 			var grammar = Grammar(ast.lhs, ast.rhs, dprec);
-			console.log(grammar);
 			addGrammar(grammar);
 			return null;
 			break;
@@ -126,7 +125,6 @@ function eval(ast) {
 				assocs[operator] = [precLevel, direction];
 			}
 			grammars["assoc"] = assocs;
-			console.log(grammars);
 			return null
 			break;
 
