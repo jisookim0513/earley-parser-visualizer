@@ -157,9 +157,7 @@ function earleyParseInput(grammars, input){
             // for each edge (i,j-1,N -> alpha . inp[j] beta)
             // add edge (i,j,N -> alpha inp[j] . beta)
             
-            var edgeList = edgesIncomingTo(j-1,inProgress)[0];
-            console.log("edges coming here: ")
-            
+            var edgeList = edgesIncomingTo(j-1,inProgress)[0];            
             for (edgeIndex in edgeList){ //(i, _j, n, rhs, pos)
                 var edge = edgeList[edgeIndex];
                 var i = edge.src;
@@ -188,7 +186,6 @@ function earleyParseInput(grammars, input){
 
         var edgeWasInserted = true;
         while (edgeWasInserted){
-            console.log("WHILE EDGE IS INSERTED")
             edgeWasInserted = false;
             // COMPLETE productions
             // for each edge (i,j,N -> alpha .)

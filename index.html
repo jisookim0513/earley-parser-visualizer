@@ -165,7 +165,7 @@
         return earleyParseInput(grammars, input);
       }
 
-      // Converts Earley's edge representatino which is an obejct to D3's, which is an array
+      // Converts Earley's edge representation which is an obejct to D3's, which is an array
       function marshallEdges(edges){
         var marshalled = []
         for (i = 0; i < edges.length; i++) {
@@ -173,7 +173,9 @@
           var edgeProgression = edge.edgeProgression;
           var lhs = edgeProgression.N;
           var rhs = edgeProgression.RHS;
-          marshalled.push([edge.src, edge.dst, lhs + " -> " +rhs]);
+          var pos = edgeProgression.pos;
+          var dottedRHS = rhs.substring(0,pos) + "." + rhs.substring(pos,rhs.length);
+          marshalled.push([edge.src, edge.dst, lhs + " -> " + dottedRHS]);
         }
         return marshalled;
       }
