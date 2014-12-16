@@ -172,7 +172,10 @@
           var edge = edges[i];
           var edgeProgression = edge.edgeProgression;
           var lhs = edgeProgression.N;
-          var rhs = edgeProgression.RHS;
+          var rhs = ""
+          for (index in edgeProgression.RHS) {
+            rhs = rhs + edgeProgression.RHS[index] + " " ;
+          }
           marshalled.push([edge.src, edge.dst, lhs + " -> " +rhs]);
         }
         return marshalled;
