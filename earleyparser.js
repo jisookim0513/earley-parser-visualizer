@@ -274,32 +274,35 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
                 var N = edgeProgression.N;
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
-                for (edgeIndex2 in edgeSet) {
-                    var edge2 = edgeSet[edgeIndex2];
-                    var src2 = edge2.src;
-                    var edgeProgression2 = edge2.edgeProgression;
-                    var N2 = edgeProgression2.N;
-                    var RHS2 = edgeProgression2.RHS;
-                    var pos2 = edgeProgression2.pos;
-                    if (getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges) > -1) {
-                        if (src == src2 && N == N2 && RHS != RHS2 && pos == pos2) {
-                            var dprecRHS = getDprec(RHS, grammars[N]);
-                            var dprecRHS2 = getDprec(RHS2, grammars[N]);
-                            console.log("dprecRHS: " + dprecRHS);
-                            console.log("dprecRHS2: " + dprecRHS2);
-                            if (dprecRHS == dprecRHS2) {
-                                is_amb = true;
-                                ambiguousStuff.push(N + "->" + RHS);
-                                ambiguousStuff.push(N + "->" + RHS2);
-                            } else if (dprecRHS < dprecRHS2) {
-                                var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
-                                if (index > -1) {
-                                    finalEdges.splice(index, 1);
-                                }
-                            } else if (dprecRHS > dprecRHS2) {
-                                var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
-                                if (index > -1) {
-                                    finalEdges.splice(index, 1);
+                console.log(getIndexOfEdge(dest, src, N, RHS, pos, finalEdges));
+                if (getIndexOfEdge(dest, src, N, RHS, pos, finalEdges) > -1){
+                    for (edgeIndex2 in edgeSet) {
+                        var edge2 = edgeSet[edgeIndex2];
+                        var src2 = edge2.src;
+                        var edgeProgression2 = edge2.edgeProgression;
+                        var N2 = edgeProgression2.N;
+                        var RHS2 = edgeProgression2.RHS;
+                        var pos2 = edgeProgression2.pos;
+                        if (getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges) > -1) {
+                            if (src == src2 && N == N2 && RHS != RHS2) {
+                                var dprecRHS = getDprec(RHS, grammars[N]);
+                                var dprecRHS2 = getDprec(RHS2, grammars[N]);
+                                console.log("dprecRHS: " + dprecRHS);
+                                console.log("dprecRHS2: " + dprecRHS2);
+                                if (dprecRHS == dprecRHS2) {
+                                    is_amb = true;
+                                    ambiguousStuff.push(N + "->" + RHS.join().replace(/,/g, " ") + ': ' + "(" + src + ", " + dest + ")" );
+                                    //ambiguousStuff.push(N + "->" + RHS2.join().replace(/,/g, " ") + ': ' + "(" + src2 + ", " + dest + ")");
+                                } else if (dprecRHS > dprecRHS2) {
+                                    var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
+                                    if (index > -1) {
+                                        finalEdges.splice(index, 1);
+                                    }
+                                } else if (dprecRHS < dprecRHS2) {
+                                    var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
+                                    if (index > -1) {
+                                        finalEdges.splice(index, 1);
+                                    }
                                 }
                             }
                         }
