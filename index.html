@@ -132,19 +132,26 @@
         .text('Forward')
         .on('click', function() { stepForward(nowgraph); });
 
+      root.append('label')
+        .text("Draw Complete edges only")
+        .append('input')
+        .attr('type', 'checkbox')
+        .text("Show only Completed edges");
       // Receive input from REPL, parse it into AST
       function handleUserInput(text){
         try {
           var ast = parse(text);
           var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
           displayGrammar(ast.type, text);
+         // $('#userinput').val("");
           setErrorMessage("");
         } catch (err){
           setErrorMessage(err.message);
         }
         if (obj){
           var input = obj.input;
-          var earleyResult = earleyParse(obj.grammars, input);
+          var completeEdgesOnly = root.select('label').select('input')[0][0].checked;
+          var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
           console.log(earleyResult);
           var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
           nowgraph = new Graph(marshalledEdges, earleyResult.nodes, earleyResult.initEdges);
@@ -159,10 +166,8 @@
       }
 
       // Calls Vivian;s earley parser
-      function earleyParse(grammars, input){
-       // var gramms = {"E": {"rhs": "Num + E", "dprec": null}, "Num": {"rhs": "1", "dprec": null}, "S": {"rhs": "E", "dprec": null}, "assoc": {"+": [1, "left"], "counter": 1}};
-        //return earleyParseInput(gramms, input);
-        return earleyParseInput(grammars, input);
+      function earleyParse(grammars, input, completeEdgesOnly){
+        return earleyParseInput(grammars, input, completeEdgesOnly);
       }
 
       // Converts Earley's edge representation which is an obejct to D3's, which is an array

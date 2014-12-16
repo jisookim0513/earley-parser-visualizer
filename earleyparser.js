@@ -9,7 +9,7 @@ function Key(dst, status){
 }
 
 Key.prototype.toString = function(){
-    return "(" + this.dst + ", " + this.complete +")";
+    return "(" + this.dst + ", " + this.status +")";
 }
 
 // Used to parse key and return the destination
@@ -74,7 +74,7 @@ function getIndexOfEdge(dest, src, lhs, rhs, pos, edgeList){
     return -1;
 }
 
-function earleyParseInput(grammars, input){
+function earleyParseInput(grammars, input, completeEdgesOnly){
     //grammar represented by rhs, prec, lhs
     //a dictionary of edges
     var initEdgeList = [];
@@ -116,23 +116,24 @@ function earleyParseInput(grammars, input){
         var N = edgeProgression.N;
         var RHS = edgeProgression.RHS;
         var pos = edgeProgression.pos;
-
-        var temp = edgesIncomingTo(dst, status);
-        var edgeList = temp[0];
-        var edgeSet = temp[1];
-
         var status;
         if (RHS.length == pos) {
             status = complete;
         } else {
             status = inProgress;
         }
+        var temp = edgesIncomingTo(dst, status);
+        var edgeList = temp[0];
+        var edgeSet = temp[1];
 
         if (!(edgeInList(e, edgeSet))){
-            
             edgeList.push(e);
             edgeSet.push(e);
-            finalEdges.push(e);
+            if(!completeEdgesOnly || (completeEdgesOnly && status === complete)){
+                console.log(completeEdgesOnly);
+                console.log(status);
+                finalEdges.push(e);
+            }
             return true;
         }
         
@@ -167,17 +168,10 @@ function earleyParseInput(grammars, input){
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
 
-                if (_j !=j-1){
-                    
+                if (_j !=j-1){    
                     break;
                 }
                 
-                
-                
-                
-                
-                
-
                 if ((pos < RHS.length) && (RHS[pos] === input[j-1])){
                     addEdge(new Edge(i,j, (new EdgeProgression(N, RHS, pos+1))));
                 }
