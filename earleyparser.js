@@ -1,3 +1,7 @@
+//ENUM for state of edge.
+complete = 0
+inProgress = 1
+
 // Used as a key for the graph
 function Key(dst, status){
     this.dst = dst;
@@ -6,6 +10,13 @@ function Key(dst, status){
 
 Key.prototype.toString = function(){
     return "(" + this.dst + ", " + this.complete +")";
+}
+
+// Used to parse key and return the destination
+function getDestProg(key){
+    var dest_prog = key.substring(1, key.length - 1).split(", ");
+    dest_prog[1] = parseInt(dest_prog[1]);
+    return dest_prog;
 }
 
 //Used to represent an edge
@@ -35,6 +46,32 @@ function edgeInList(edge, lst){
 
 function equalProgression(prog1, prog2){
     return prog1.N == prog2.N && prog1.RHS == prog2.RHS && prog1.pos == prog2.pos;
+}
+
+function getDprec(rhs, lstRHS){
+    for (index in lstRHS){
+        if (lstRHS[index]["rhs"] == rhs){
+            return lstRHS[index]["dprec"];
+        }
+    }
+    return -1;
+}
+
+// returns the index of the edge in the list with given properties
+function getIndexOfEdge(dest, src, lhs, rhs, pos, edgeList){
+    for (edgeIndex in edgeList){
+        var edge = edgeList[edgeIndex];
+        var srcE = edge.src;
+        var destE = edge.dst;
+        var edgeProgression = edge.edgeProgression;
+        var N = edgeProgression.N;
+        var RHS = edgeProgression.RHS;
+        var posE = edgeProgression.pos;
+        if (src == srcE && dest == destE && lhs == N && rhs == RHS && pos == posE) {
+            return edgeIndex;
+        }
+    }
+    return -1;
 }
 
 function earleyParseInput(grammars, input){
@@ -69,10 +106,6 @@ function earleyParseInput(grammars, input){
     function isUpperCase(c){
         return /^[A-Z]/.test(c);
     }
-
-    //ENUM for state of edge.
-    complete = 0
-    inProgress = 1
 
     // Adds edge to the graph if not in the graph already
     function addEdge(e){
@@ -206,8 +239,62 @@ function earleyParseInput(grammars, input){
             }
         }
     }
-    console.log(nodelist);
-    console.log(initEdgeList);
-    console.log(finalEdges);
+
+    // Checking ambiguity and modifying "graph" according to dprec (if given)
+    var is_amb = false;
+    var ambiguousStuff = [];
+
+    for (key in graph) {
+        var dest = getDestProg(key)[0];
+        var comp = getDestProg(key)[1];
+        if (comp == complete) {
+            var edgeList = edgesIncomingTo(dest, comp)[0];
+            var edgeSet = edgesIncomingTo(dest, comp)[1];
+            for (edgeIndex in edgeList) {
+                var edge = edgeList[edgeIndex];
+                var src = edge.src;
+                var edgeProgression = edge.edgeProgression;
+                var N = edgeProgression.N;
+                var RHS = edgeProgression.RHS;
+                var pos = edgeProgression.pos;
+                for (edgeIndex2 in edgeSet) {
+                    var edge2 = edgeSet[edgeIndex2];
+                    var src2 = edge2.src;
+                    var edgeProgression2 = edge2.edgeProgression;
+                    var N2 = edgeProgression2.N;
+                    var RHS2 = edgeProgression2.RHS;
+                    var pos2 = edgeProgression2.pos;
+                    if (src == src2 && N == N2 && RHS != RHS2) {
+                        var dprecRHS = getDprec(RHS, grammars[N]);
+                        var dprecRHS2 = getDprec(RHS2, grammars[N]);
+                        if (dprecRHS == dprecRHS2) {
+                            is_amb = true;
+                            ambiguousStuff.push(N + "->" + RHS);
+                            ambiguousStuff.push(N + "->" + RHS2);
+                        } else if (dprecRHS > dprecRHS2) {
+                            var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
+                            if (index > -1) {
+                                finalEdges.splice(index, 1);
+                            } else {
+                                throw new ExecError("Edges not in finalEdges list?! Something is wrong!");
+                            }
+                        } else if (dprecRHS < dprecRHS2) {
+                            var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
+                            if (index > -1) {
+                                finalEdges.splice(index, 1);
+                            } else {
+                                throw new ExecError("Edges not in finalEdges list?! Something is wrong!");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (is_amb) {
+        throw new ExecError("Grammar is ambiguous!");
+    }
+    console.log(graph);
     return {"nodes": nodelist, "initEdges": initEdgeList, "edges": finalEdges};
  }
