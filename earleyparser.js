@@ -1,8 +1,48 @@
+// Used as a key for the graph
+function Key(dst, status){
+    this.dst = dst;
+    this.status = status;
+}
+
+Key.prototype.toString = function(){
+    return "(" + this.dst + ", " + this.complete +")";
+}
+
+//Used to represent an edge
+function Edge(src, dst, edgeProgression){
+    this.src = src;
+    this.dst = dst;
+    this.edgeProgression = edgeProgression;
+}
+
+//(S -> E+E, 0)
+function EdgeProgression(N, RHS, pos){
+    this.N = N;
+    this.RHS = RHS;
+    this.pos = pos;
+}
+
+//BECAUSE JAVASCRIPT HASH CANT HOLD TUPLE OR OBJECTS
+function edgeInList(edge, lst){
+    for (index in lst){
+        var otherEdge = lst[index];
+        if(edge.src == otherEdge.src && edge.dst == otherEdge.dst && equalProgression(edge.edgeProgression, otherEdge.edgeProgression)){
+            return true;
+        }
+    }
+    return false;
+}
+
+function equalProgression(prog1, prog2){
+    return prog1.N == prog2.N && prog1.RHS == prog2.RHS && prog1.pos == prog2.pos;
+}
+
 function earleyParseInput(grammars, input){
     //grammar represented by rhs, prec, lhs
     //a dictionary of edges
     var initEdgeList = [];
     var nodelist = [];
+    var finalEdges = []; // List of edges added that this function returns at the end
 
     //initiation
     for (count = 0; count < input.length; count++){
@@ -16,102 +56,152 @@ function earleyParseInput(grammars, input){
     console.log(nodelist);
     console.log(initEdgeList);
 
+    // Key is key representation.
+    // Value is an array. 1st element is list of edges. 2nd is set of edges
     var graph = {};
 
     function edgesIncomingTo(dst,status){
-        var key = (dst,status);
-        if (key in graph){
+        var key = new Key(dst,status);
+        if (key in graph){ //!!! What did Jisoo say? I forgot...
             return graph[key];
         }else{
-            return {};
+            return [[],[]];
         }
     } 
 
-	function match(token, input){
-        if (token == input){
-            return true;
-        }else{
-            return false;
-        }
+    function isUpperCase(c){
+        return /^[A-Z]/.test(c);
     }
 
+    //ENUM for state of edge.
+    complete = 0
+    inProgress = 1
+
+    // Adds edge to the graph if not in the graph already
     function addEdge(e){
-        if (e[3].length == pos){
-            //complete
-            var x = edgesIncomingTo(e[1],0);
-            edgeSet = x;
-            if (e in edgeSet){
-                //if it's already in the set, it's ambiguous, use prec
-                //TODO: check assoc
-            }else{                
-                graph[(e[1], 0)] = graph[(e[1], 0)].add(e);
-            }
-        }else{
-            //in progress
-            var x = edgesIncomingTo(e[1],1);
-            edgeSet = x;
-            if (!(e in edgeSet)){
-                graph[(e[1], 1)] = graph[(e[1], 1)].add(e);
-            }
+        var src = e.src;
+        var dst = e.dst;
+        var edgeProgression = e.edgeProgression;
+        var N = edgeProgression.N;
+        var RHS = edgeProgression.RHS;
+        var pos = edgeProgression.pos;
+
+        var temp = edgesIncomingTo(dst, status);
+        var edgeList = temp[0];
+        var edgeSet = temp[1];
+
+        var status;
+        if (RHS.length == pos) {
+            status = complete;
+        } else {
+            status = inProgress;
         }
-    
-        return (false, true);
-    }
-    //seeds with all starts  
-    for (production in grammars["S"][0]){ //iterates through every RHS that has LHS as "S" (start terminal)
-        addEdge((0,0,"S", production, 0));
+
+        if (!(edgeInList(e, edgeSet))){
+            edgeList.push(e);
+            edgeSet.push(e);
+            finalEdges.push(e);
+            return true;
+        }
+        return false;
     }
 
-    for (j = 1; j < input.length + 1; j ++){
+    //!!! What is the format
+    //seeds with all starts  
+    for (rhs in grammars["S"][0]){ //iterates through every RHS that has LHS as "S" (start terminal)
+        addEdge( new Edge(0,0, new EdgeProgression("S", rhs, 0)));
+    }
+
+
+    for (j = 0; j < input.length + 1; j++){// !!! Why is this not 0?
+        // skip in first iteration; we need to complete and predict the
+        // start nonterminal S before we start advancing over the input
         if (j > 0){
-            for (edgeIndex in edgesIncomingTo(j-1,1)[0]){ //(i, _j, n, rhs, pos)
-                var edge = edgesIncomingTo(j-1,1)[0][edgeIndex];
-                if ((edge[4] < edge[3].length) && (match(edge[3][edge[4]], input[j-1]))){
-                    addEdge(edge);
+            // ADVANCE TO THE NEXT TOKEN
+            // for each edge (i,j-1,N -> alpha . inp[j] beta)
+            // add edge (i,j,N -> alpha inp[j] . beta)
+            var edgeList = edgesIncomingTo(j-1,1)[0];
+            for (edgeIndex in edgeList){ //(i, _j, n, rhs, pos)
+                var edge = edgeList[edgeIndex];
+                var i = edge.src;
+                var _j = edge.dst;
+                var edgeProgression = edge.edgeProgression;
+                var N = edgeProgression.N;
+                var RHS = edgeProgression.RHS;
+                var pos = edgeProgression.pos;
+
+                if ((pos < RHS.length) && (RHS[pos] == input[j-1])){
+                    addEdge(new Edge(i,j, (new EdgeProgression(N, RHS, pos+1))));
                 }
             }
         }
 
-        //complete
-        edgeWasInserted = true;
+        var edgeWasInserted = true;
         while (edgeWasInserted){
             edgeWasInserted = false;
-            for (edgeIndex in edgesIncomingTo(j,0)[0]){ //(i,_j,n,rhs,pos)
-                var edge = edgesIncomingTo(j,0)[0][edgeIndex];
-                for (edgeIndex2 in edgesIncomingTo(edge[0],1)[0]){ //(k,_i,m,rhs2,pos2)
-                    var edge2 = edgesIncomingTo(edge[0],1)[0][edgeIndex2];
-                    if (edge2[3][edge2[4]]==edge[2]){
-                        var x = addEdge((edge2[0],j,edge2[2],edge2[3],edge2[4]+1));
-                        var inserted = x[0];
-                        var amb = x[1];
-                        edgeWasInserted = inserted || edgeWasInserted;
+            // COMPLETE productions
+            // for each edge (i,j,N -> alpha .)
+            //    for each edge (k,i,M -> beta . N gamma)
+            //        add edge (k,j,M -> beta N . gamma)
+            var edgeList = edgesIncomingTo(j, complete)[0];
+            for (edgeIndex in edgeList){ //(i,_j,n,rhs,pos)
+                var edge = edgeList[edgeIndex];
+                var i = edge.src;
+                var _j = edge.dst;
+                var edgeProgression = edge.edgeProgression;
+                var N = edgeProgression.N;
+                var RHS = edgeProgression.RHS;
+                var pos = edgeProgression.pos;
+
+                var edgeList2 = edgesIncomingTo(i,inProgress)[0];
+                for (edgeIndex2 in edgeList2){ //(k,_i,m,rhs2,pos2)
+                    var edge2 = edgeList2[edgeIndex2];
+                    var k = edge2.src;
+                    var _i = edge2.dst;
+                    var edgeProgression2 = edge2.edgeProgression;
+                    var M = edgeProgression2.N;
+                    var RHS2 = edgeProgression2.RHS;
+                    var pos2 = edgeProgression2.pos;
+
+                    if (RHS[pos2] == N){
+                        var x = addEdge(new Edge(k,j, new EdgeProgression(M, RHS2, pos2+1)));
+                        edgeWasInserted = x || edgeWasInserted;
+                    }
+                }
+            }
+        
+
+            // PREDICT what the parser is to see on input (move dots in edges 
+            // that are in progress)
+            //
+            // for each edge (i,j,N -> alpha . M beta)
+            //    for each production M -> gamma
+            //          add edge (j,j,M -> . gamma)
+            var edgeList = edgesIncomingTo(j,inProgress)[0];
+            for (edgeIndex in edgeList){ //(i,_j,n,rhs,pos)
+                var edge = edgeList[edgeIndex];
+                var i = edge.src;
+                var _j = edge.dst;
+                var edgeProgression = edge.edgeProgression;
+                var N = edgeProgression.N;
+                var RHS = edgeProgression.RHS;
+                var pos = edgeProgression.pos;
+
+                // Non terminals are upper case
+                if (isUpperCase(RHS[pos])) {
+                    var M = RHS[pos];
+                    //prediction: for all rules D->alpha add edge (j,j,.alpha)
+                    // !!! What is the format
+                    var RHSes = grammars[M][0];
+                    for (RHSindex in RHSes){ //iterates through the list of RHS from the every grammar with this LHS
+                        var RHS = RHSes[RHSindex];
+                        var x = addEdge(new Edge(j,j, new Edge(M, RHS, 0)));
+                        edgeWasInserted = x || edgeWasInserted;
                     }
                 }
             }
         }
-//predict          
-        for (edgeIndex in edgesIncomingTo(j,1)[0]){ //(i,_j,n,rhs,pos)
-            var edge = edgesIncomingTo(j,1)[0][edgeIndex];
-            if (edge[3][edge[4]] in string.ascii_uppercase){
-                var m = edge[3][edge[4]];
-                //!!!
-                for (edge2 in grammars[m][0]){ //iterates through the list of RHS from the every grammar with this LHS
-                    var edge2 = grammars[m][0][3];
-                    var x = addEdge((j,j,m,edge2[3],0));
-                    var inserted = x[0];
-                    var amb = x[1];
-                    edgeWasInserted = inserted || edgeWasInserted;
-                }
-            }
-        }
     }
 
-    //convert list of edges to format
-    var finalEdge = [];
-    for (edgeList in graph){ //edgeList is a list of (source, destination, n, rhs, pos)
-        for (edge in edgeList){
-            finalEdge.append([source, destination, edge[2] + "->" + edge[3]]);
-        }
-    }
-    return {"nodes": nodelist, "initEdges": initEdgeList, "edges": finalEdge};
+    return {"nodes": nodelist, "initEdges": initEdgeList, "edges": finalEdges};
  }

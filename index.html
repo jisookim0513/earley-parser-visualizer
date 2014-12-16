@@ -199,7 +199,11 @@
       }
 
       $(document).ready(setupTextBox);
-
+      handleUserInput("grammar S -> E");
+      handleUserInput("grammar E -> E+E");
+      handleUserInput("grammar E -> E-E");
+      handleUserInput("grammar E -> a");
+      handleUserInput("grammar E -> b");
     </script>
 
   </body>
