@@ -61,7 +61,7 @@ Graph.prototype.isAmb = function(edge){
     var e = drawn[index];
     if (dest == getEdgeDest(e)) {
       if (lhs == (getEdgeDesc(e).split("->"))[0] && getEdgeDesc(edge) != getEdgeDesc(e)) {
-        alert("Ambiguous!");
+        //alert("Ambiguous!");
       }
     }
   }
@@ -69,15 +69,15 @@ Graph.prototype.isAmb = function(edge){
 
 // Selectors for edge components
 function getEdgeSource(edge){
-  return edge? edge[0] : NullEdgeException();
+  return edge !== null ? edge[0] : NullEdgeException();
 }
 
 function getEdgeDest(edge){
-  return edge? edge[1] : NullEdgeException();
+  return edge !== null ? edge[1] : NullEdgeException();
 }
 
 function getEdgeDesc(edge){
-  return edge? edge[2] : NullEdgeException();
+  return edge !== null ? edge[2] : NullEdgeException();
 }
 
 function NullEdgeException(){
@@ -99,7 +99,6 @@ function stepForward(nowGraph){
       var forwardGraph = nowGraph.step();
       animate(nowGraph, forwardGraph);
       nowGraph.current = nowGraph.current + 1;
-      console.log("Current is  " + nowGraph.current)
   }
 };
 
@@ -122,7 +121,6 @@ var curved = d3.svg.line()
 function drawGraph(graph){
   var svg = d3.select('body').select('svg');
   //circleDist = svg.style("width")/graph.nodes.length;
-  console.log("cleaning up svg");
   svg.html(""); //Cleans SVG
   drawNodes(graph);
   drawInitEdges(graph);

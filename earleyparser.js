@@ -62,7 +62,8 @@ function earleyParseInput(grammars, input){
         if (key in graph){ //!!! What did Jisoo say? I forgot...
             return graph[key];
         }else{
-            return [[],[]];
+            graph[key] = [[],[]];
+            return graph[key];
         }
     } 
 
@@ -88,6 +89,15 @@ function earleyParseInput(grammars, input){
         var edgeSet = temp[1];
 
         var status;
+        console.log(">>>>>>>>>>>");
+        console.log(e);
+        console.log(src);
+        console.log(dst);
+        console.log(edgeProgression);
+        console.log(N);
+        console.log(RHS);
+        console.log(pos);
+        console.log(">>>>>>>>>>>");
         if (RHS.length == pos) {
             status = complete;
         } else {
@@ -114,13 +124,15 @@ function earleyParseInput(grammars, input){
     for (j = 0; j < input.length + 1; j++){// !!! Why is this not 0?
         // skip in first iteration; we need to complete and predict the
         // start nonterminal S before we start advancing over the input
+        console.log("MAIN FOR LOOP");
+        console.log(input[j]);
         if (j > 0){
             // ADVANCE TO THE NEXT TOKEN
             // for each edge (i,j-1,N -> alpha . inp[j] beta)
             // add edge (i,j,N -> alpha inp[j] . beta)
-            var edgeList = edgesIncomingTo(j-1,inProgress)[0];
             console.log("Edges Incoming To: ");
             console.log(j-1);
+            var edgeList = edgesIncomingTo(j-1,inProgress)[0];
             console.log(edgeList);
             for (edgeIndex in edgeList){ //(i, _j, n, rhs, pos)
                 var edge = edgeList[edgeIndex];
@@ -142,12 +154,16 @@ function earleyParseInput(grammars, input){
 
         var edgeWasInserted = true;
         while (edgeWasInserted){
+            console.log("WHILE EDGE IS INSERTED")
             edgeWasInserted = false;
             // COMPLETE productions
             // for each edge (i,j,N -> alpha .)
             //    for each edge (k,i,M -> beta . N gamma)
             //        add edge (k,j,M -> beta N . gamma)
+            console.log("COMPLETE");
             var edgeList = edgesIncomingTo(j, complete)[0];
+            console.log("edges incoming To " + j);
+            console.log(edgeList);
             for (edgeIndex in edgeList){ //(i,_j,n,rhs,pos)
                 var edge = edgeList[edgeIndex];
                 var i = edge.src;
@@ -157,7 +173,17 @@ function earleyParseInput(grammars, input){
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
 
+
+                console.log("RHS is " + RHS);
+                console.log("Pos is "  + pos);
+                /*
+                if (!(_j ==j && pos == RHS.length)) {
+                    throw new Error("Position is wrong");
+                }
+                */
+                console.log("Edges incoming to "+ i);
                 var edgeList2 = edgesIncomingTo(i,inProgress)[0];
+                console.log(edgeList2);
                 for (edgeIndex2 in edgeList2){ //(k,_i,m,rhs2,pos2)
                     var edge2 = edgeList2[edgeIndex2];
                     var k = edge2.src;
@@ -181,6 +207,7 @@ function earleyParseInput(grammars, input){
             // for each edge (i,j,N -> alpha . M beta)
             //    for each production M -> gamma
             //          add edge (j,j,M -> . gamma)
+            console.log("PREDICTION");
             var edgeList = edgesIncomingTo(j,inProgress)[0];
             for (edgeIndex in edgeList){ //(i,_j,n,rhs,pos)
                 var edge = edgeList[edgeIndex];
@@ -193,13 +220,16 @@ function earleyParseInput(grammars, input){
 
                 // Non terminals are upper case
                 if (isUpperCase(RHS[pos])) {
+                    console.log("WOO UPPER CASE");
                     var M = RHS[pos];
                     //prediction: for all rules D->alpha add edge (j,j,.alpha)
                     // !!! What is the format
                     var RHSes = grammars[M];
+                    console.log("WOO FIND NEW RHSes");
+                    console.log(RHSes);
                     for (RHSindex in RHSes){ //iterates through the list of RHS from the every grammar with this LHS
                         var RHS = RHSes[RHSindex];
-                        var x = addEdge(new Edge(j,j, new Edge(M, RHS, 0)));
+                        var x = addEdge(new Edge(j,j, new EdgeProgression(M, RHS, 0)));
                         edgeWasInserted = x || edgeWasInserted;
                     }
                 }

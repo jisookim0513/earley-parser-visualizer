@@ -1,4 +1,4 @@
- //Interpreter that takes in an AST from Jison
+ //	Interpreter that takes in an AST from Jison
 // Keeps track of grammara and input that will be passed in to the Earley parser
 
 var grammars = {};
@@ -23,7 +23,7 @@ function Grammar(lhs, rhs){
 //Adds grammar
 function addGrammar(lhs, rhs){
 	if (lhs in grammars) {
-		if (! (rhs in grammars[lhs])){
+		if (! (grammars[lhs].indexOf(rhs) > -1)) {
 			grammars[lhs].push(rhs);
 		} else {
 			throw new ExecError("Grammar declared previously");
