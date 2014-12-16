@@ -45,7 +45,7 @@
     <!-- Temporarily textbox for user input -->
   <div id="left">
     <div id='inputline' style="font-family: sans-serif; font-size: 12px; height=50px;">
-      Enter your input here : <input type="textbox" id="userinput" value="input a+a*a" style="width: 570px"></input>
+      Enter your input here : <input type="textbox" id="userinput" value="input if ( a ) if ( a ) else a" style="width: 570px"></input>
       <button id="Get">Enter</button> 
     </div>
     <div style="font-family: sans-serif; font-size: 16px; height=50px;">
@@ -218,8 +218,8 @@
       // handleUserInput("grammar E -> E+E");
       // handleUserInput("grammar E -> E-E");
       // handleUserInput("grammar E -> E*E");
-      handleUserInput("grammar E -> if(E)E %dprec 2");
-      handleUserInput("grammar E -> if(E)EelseE %dprec 1");
+      handleUserInput("grammar E -> if ( E ) E");
+      handleUserInput("grammar E -> if ( E ) E else E");
       handleUserInput("grammar E -> a");
       handleUserInput("grammar E -> b");
     </script>

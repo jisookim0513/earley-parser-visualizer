@@ -29,7 +29,7 @@
 
  		case "input":
  			ast["type"] = "input";
- 			ast["value"] = text.substring(6, text.length);
+ 			ast["value"] = text.substring(6, text.length).split(" ");
  			break;
 
  		case "assoc":
@@ -53,16 +53,16 @@
  	var precIndex = byArrow[1].indexOf("%prec");
  	if (dprecIndex > -1) {
  		var byDprec = byArrow[1].split("%dprec");
- 		ast["rhs"] = byDprec[0].substring(1, byDprec[0].length-1);
+ 		ast["rhs"] = byDprec[0].substring(1, byDprec[0].length-1).split(" ");
  		ast["dprec"] = parseInt(byDprec[1]);
  	} else if (precIndex > -1) {
  		var byPrec = byArrow[1].split("%prec");
- 		ast["rhs"] = byPrec[0].substring(1, byPrec[0].length-1);
+ 		ast["rhs"] = byPrec[0].substring(1, byPrec[0].length-1).split(" ");
  		ast["prec"] = byPrec[1].substring(1, byPrec[1].length);
  	} else if (dprecIndex > -1 && precIndex > -1) {
  		throw new ExecError("Can't have %dprec and %prec at the same time!");
  	} else {
- 		ast["rhs"] = byArrow[1].substring(1, byArrow[1].length);
+ 		ast["rhs"] = byArrow[1].substring(1, byArrow[1].length).split(" ");
  	}
  	return ast;
  }
