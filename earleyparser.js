@@ -332,6 +332,33 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
                                     }
                                 } else {
                                     // check for associativity
+                                    var completeEdges = edgesIncomingTo(src + 2, comp)[0];
+                                    var chooseRHS1 = true;
+                                    // for (i in completeEdges) {
+                                    //     var edge = edgeList[edgeIndex];
+                                    //     var RHS = edgeProgression.RHS;
+                                    //     if (RHS.length == 3) {
+                                    //         var op = RHS[1];
+                                    //         if (op == op1) {
+                                    //             chooseRHS1 = false;
+                                    //         } else if (op == op2) {
+                                    //             chooseRHS1 = true;
+                                    //         }
+                                    //     }
+                                    // }
+                                    var ix1 = getIndexOfEdge(dest, src, N, RHS, pos, edgeList);
+                                    var ix2 = getIndexOfEdge(dest, src2, N2, RHS2, pos2, edgeList);
+                                    if (ix1 < ix2) {
+                                        var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
+                                        if (index > -1) {
+                                            finalEdges.splice(index, 1);
+                                        }
+                                    } else {
+                                        var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
+                                        if (index > -1) {
+                                            finalEdges.splice(index, 1);
+                                        }  
+                                    }
                                 }
                             }
                         }
