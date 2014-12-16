@@ -152,11 +152,14 @@
           setErrorMessage(err.message);
         }
         if (obj){
-          var input = obj.input;
-          var completeEdgesOnly = d3.select('#complete-edge').select('label').select('input')[0][0].checked;
-          var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
-          console.log(earleyResult);
-          var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
+          try {
+            var input = obj.input;
+            var completeEdgesOnly = d3.select('#complete-edge').select('label').select('input')[0][0].checked;
+            var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
+            var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
+          } catch (err){
+            setErrorMessage(err.message);
+          }
           nowgraph = new Graph(marshalledEdges, earleyResult.nodes, earleyResult.initEdges);
           drawGraph(nowgraph);
         }
@@ -236,7 +239,7 @@
       handleUserInput("grammar E -> E + E");
       handleUserInput("grammar E -> E - E"); 
       handleUserInput("grammar E -> a");
-      handleUserInput("assoc left +,-");
+      handleUserInput("assoc right +,-");
     </script>
 
   </body>
