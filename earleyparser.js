@@ -89,15 +89,6 @@ function earleyParseInput(grammars, input){
         var edgeSet = temp[1];
 
         var status;
-        console.log(">>>>>>>>>>>");
-        console.log(e);
-        console.log(src);
-        console.log(dst);
-        console.log(edgeProgression);
-        console.log(N);
-        console.log(RHS);
-        console.log(pos);
-        console.log(">>>>>>>>>>>");
         if (RHS.length == pos) {
             status = complete;
         } else {
@@ -105,17 +96,20 @@ function earleyParseInput(grammars, input){
         }
 
         if (!(edgeInList(e, edgeSet))){
+            console.log("NEW!!!!!!!!!!!!!!!!!!!!!!!!!");
             edgeList.push(e);
             edgeSet.push(e);
             finalEdges.push(e);
             return true;
         }
+        console.log("~~~~~~~~~~~~~~~~~~~");
         return false;
     }
 
     //!!! What is the format
     //seeds with all starts  
-    var RHSes = grammars["S"];
+    //var RHSes = grammars["S"];
+    var RHSes = rhsesAsList("S");
     for (index in RHSes){ //iterates through every RHS that has LHS as "S" (start terminal)
         var rhs = RHSes[index];
         addEdge(new Edge(0,0, new EdgeProgression("S", rhs, 0)));
@@ -124,15 +118,14 @@ function earleyParseInput(grammars, input){
     for (j = 0; j < input.length + 1; j++){// !!! Why is this not 0?
         // skip in first iteration; we need to complete and predict the
         // start nonterminal S before we start advancing over the input
-        console.log("MAIN FOR LOOP");
-        console.log(input[j]);
+        console.log(">>>>>>>>>>>>>> MAIN FOR LOOP: " + j);
         if (j > 0){
             // ADVANCE TO THE NEXT TOKEN
             // for each edge (i,j-1,N -> alpha . inp[j] beta)
             // add edge (i,j,N -> alpha inp[j] . beta)
-            console.log("Edges Incoming To: ");
-            console.log(j-1);
+            console.log("Edges Incoming To: " + (j-1));
             var edgeList = edgesIncomingTo(j-1,inProgress)[0];
+            console.log("edges coming here: ")
             console.log(edgeList);
             for (edgeIndex in edgeList){ //(i, _j, n, rhs, pos)
                 var edge = edgeList[edgeIndex];
@@ -144,8 +137,16 @@ function earleyParseInput(grammars, input){
                 var pos = edgeProgression.pos;
 
                 if (_j !=j-1){
-                    throw new Error("Assertion Failed");
+                    console.log("WTH IS THIS ASSERTION");
+                    break;
                 }
+                console.log(pos);
+                console.log(RHS);
+                console.log(RHS.length);
+                console.log(pos < RHS.length);
+                console.log(input[j-1]);
+                console.log(RHS[pos]);
+
                 if ((pos < RHS.length) && (RHS[pos] === input[j-1])){
                     addEdge(new Edge(i,j, (new EdgeProgression(N, RHS, pos+1))));
                 }
@@ -162,7 +163,7 @@ function earleyParseInput(grammars, input){
             //        add edge (k,j,M -> beta N . gamma)
             console.log("COMPLETE");
             var edgeList = edgesIncomingTo(j, complete)[0];
-            console.log("edges incoming To " + j);
+            console.log("COMPLETE: Edges incoming to " + j);
             console.log(edgeList);
             for (edgeIndex in edgeList){ //(i,_j,n,rhs,pos)
                 var edge = edgeList[edgeIndex];
@@ -172,16 +173,11 @@ function earleyParseInput(grammars, input){
                 var N = edgeProgression.N;
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
-
-
-                console.log("RHS is " + RHS);
-                console.log("Pos is "  + pos);
-                /*
-                if (!(_j ==j && pos == RHS.length)) {
-                    throw new Error("Position is wrong");
+                console.log("COMPLETE: Edges incoming to "+ i);
+                if(_j != j || pos != RHS.length){
+                    console.log("BREAK");
+                    break;
                 }
-                */
-                console.log("Edges incoming to "+ i);
                 var edgeList2 = edgesIncomingTo(i,inProgress)[0];
                 console.log(edgeList2);
                 for (edgeIndex2 in edgeList2){ //(k,_i,m,rhs2,pos2)
@@ -193,7 +189,9 @@ function earleyParseInput(grammars, input){
                     var RHS2 = edgeProgression2.RHS;
                     var pos2 = edgeProgression2.pos;
 
-                    if (RHS[pos2] == N){
+                    console.log(RHS[pos2] + "  " + N);
+                    if (RHS2[pos2] == N){
+                        console.log("TRYING TO INSERT TO COMPLETE");
                         var x = addEdge(new Edge(k,j, new EdgeProgression(M, RHS2, pos2+1)));
                         edgeWasInserted = x || edgeWasInserted;
                     }
@@ -220,11 +218,11 @@ function earleyParseInput(grammars, input){
 
                 // Non terminals are upper case
                 if (isUpperCase(RHS[pos])) {
-                    console.log("WOO UPPER CASE");
                     var M = RHS[pos];
                     //prediction: for all rules D->alpha add edge (j,j,.alpha)
                     // !!! What is the format
-                    var RHSes = grammars[M];
+                    //var RHSes = grammars[M];
+                    var RHSes = rhsesAsList(M);
                     console.log("WOO FIND NEW RHSes");
                     console.log(RHSes);
                     for (RHSindex in RHSes){ //iterates through the list of RHS from the every grammar with this LHS

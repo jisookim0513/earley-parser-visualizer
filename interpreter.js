@@ -1,7 +1,7 @@
- //	Interpreter that takes in an AST from Jison
+// Interpreter that takes in an AST from Jison
 // Keeps track of grammara and input that will be passed in to the Earley parser
 
-var grammars = {};
+var grammars = {"assoc": {}};
 // Key is string representing binary operator. Value is an array. 
 //First element int, presenting the operator's priority. 
 //Second element "left" or "right" which is the associtiavity
@@ -16,17 +16,36 @@ ExecError.prototype = Error;
 ExecError.prototype.constructor = ExecError;
 
 //ADT to rerepsent grammar for dprecs
-function Grammar(lhs, rhs){
-	return lhs + " - > " + rhs;
+function Grammar(lhs, rhs, dprec){
+	return {"lhs": lhs, "rhs": {"rhs": rhs, "dprec": dprec}};
+}
+
+function rhsesAsList(lhs){
+	var rhses = grammars[lhs];
+	var output = [];
+	for(i = 0; i < rhses.length; i++){
+		output.push(rhses[i].rhs);
+	}
+	return output;
 }
 
 //Adds grammar
-function addGrammar(lhs, rhs){
+function addGrammar(grammar){
+	var lhs = grammar.lhs;
+	var rhs = grammar.rhs;
+	var dprec = grammar.dprec;
 	if (lhs in grammars) {
-		if (! (grammars[lhs].indexOf(rhs) > -1)) {
+		var skip = false;
+		for (i=0; i<grammars[lhs].length; i++) {
+			if (grammars[lhs][i]["rhs"] == rhs["rhs"] && grammars[lhs][i]["dprec"] != rhs["dprec"]) {
+				grammars[lhs][i]["dprec"] = rhs["dprec"];
+				skip = true;
+			} else if (grammars[lhs][i]["rhs"] == rhs["rhs"] && grammars[lhs][i]["dprec"] == rhs["dprec"]){
+				throw new ExecError("Grammar declared previously");
+			}
+		}
+		if (!skip) {
 			grammars[lhs].push(rhs);
-		} else {
-			throw new ExecError("Grammar declared previously");
 		}
 	} else {
 		grammars[lhs] = [rhs];
@@ -35,7 +54,6 @@ function addGrammar(lhs, rhs){
 
 
 function addDPrec(grammar, dprec){
-	console.log(dprec);
 	if (dprec > 0) {
 		dprecs[grammar] = dprec;
 	} else {
@@ -70,12 +88,6 @@ function assertNumber(x){
 function eval(ast) {
 	switch(ast.type) {
 		case "grammar" :
-			// Adds to this grammar
-			var lhs = ast.lhs;
-			var rhs = ast.rhs;
-			var grammar = Grammar(lhs,rhs);
-			addGrammar(lhs, rhs);
-
 			//Adds dprec of this grammar if it exists
 			var dprec = ast.dprec;
 			if (dprec != null){
@@ -85,9 +97,14 @@ function eval(ast) {
 			// Adds dprec based on operator's precendence
 			var operator = ast.prec;
 			if (operator != null){
-				var prec = getOpPrec(operator);
+				dprec = getOpPrec(operator);
 				addDPrec(grammar, prec);
 			} 
+
+			// Adds to this grammar
+			var grammar = Grammar(ast.lhs, ast.rhs, dprec);
+			console.log(grammar);
+			addGrammar(grammar);
 			return null;
 			break;
 
@@ -108,6 +125,8 @@ function eval(ast) {
 				}
 				assocs[operator] = [precLevel, direction];
 			}
+			grammars["assoc"] = assocs;
+			console.log(grammars);
 			return null
 			break;
 
