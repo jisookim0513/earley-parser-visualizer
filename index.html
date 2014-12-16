@@ -231,12 +231,32 @@
       $(document).ready(setupTextBox);
 
       d3.select('#complete-edge').select('label').select('input')[0][0].checked = true;
- 
-      handleUserInput("grammar S -> E");
-      handleUserInput("grammar E -> E + E");
-      handleUserInput("grammar E -> E - E"); 
-      handleUserInput("grammar E -> a");
-      handleUserInput("assoc left +,-");
+
+      var x = 3;
+      switch (x) {
+        case 0:
+          break;
+        case 1:
+          handleUserInput("grammar S -> E E");
+          handleUserInput("grammar E -> hello");
+          handleUserInput("grammar E -> world");
+          break;
+        case 2:
+          handleUserInput("grammar S -> E");
+          handleUserInput("grammar E -> E + E");
+          handleUserInput("grammar E -> E - E"); 
+          handleUserInput("grammar E -> a");
+          handleUserInput("assoc left +,-");
+        case 3:
+          handleUserInput("grammar S -> E");
+          handleUserInput("grammar E -> if ( E ) E else E %dprec1");
+          handleUserInput("grammar E -> if ( E ) E %dprec2");
+          handleUserInput("grammar E -> a")
+          
+        break;
+      }
+
+
     </script>
 
   </body>
