@@ -293,7 +293,11 @@ function earleyParseInput(grammars, input){
     }
 
     if (is_amb) {
-        throw new ExecError("Grammar is ambiguous!");
+        var ambiguousOnes = "The following grammars are causing ambiguity: \n";
+        for (index in ambiguousStuff) {
+            ambiguousOnes = ambiguousOnes + ambiguousStuff[index] + "\n";
+        }
+        alert(ambiguousOnes);
     }
     console.log(graph);
     return {"nodes": nodelist, "initEdges": initEdgeList, "edges": finalEdges};
