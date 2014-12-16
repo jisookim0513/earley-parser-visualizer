@@ -104,7 +104,7 @@ function stepForward(nowGraph){
 
 var circleDist = 200;
 var circleY = 100;
-var lineMarginX = 10;
+var lineMarginX = 5;
 var lineMarginY = 10;
 var lineMarginBetweenSteps = 20;
 var textMarginX = -10;
@@ -135,7 +135,7 @@ circles.style("opacity",0)
        .style("opacity", 1)
        .attr("cx", function(d,i){ return i*circleDist + 30})
        .attr("cy", function(d,i){ return circleY;})
-       .attr("r", 15)
+       .attr("r", 10)
        .attr("fill", "skyblue");
 }
 
