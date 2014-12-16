@@ -142,9 +142,7 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
         return false;
     }
 
-    //!!! What is the format
     //seeds with all starts  
-    //var RHSes = grammars["S"];
     var RHSes = rhsesAsList("S");
     for (index in RHSes){ //iterates through every RHS that has LHS as "S" (start terminal)
         var rhs = RHSes[index];
