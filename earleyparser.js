@@ -9,13 +9,14 @@ function Key(dst, status){
 }
 
 Key.prototype.toString = function(){
-    return "(" + this.dst + ", " + this.complete +")";
+    return "(" + this.dst + ", " + this.status +")";
 }
 
 // Used to parse key and return the destination
 function getDestProg(key){
+    console.log(">>>>");
+    console.log(key);
     var dest_prog = key.substring(1, key.length - 1).split(", ");
-    dest_prog[1] = parseInt(dest_prog[1]);
     return dest_prog;
 }
 
@@ -96,6 +97,7 @@ function earleyParseInput(grammars, input){
 
     function edgesIncomingTo(dst,status){
         var key = new Key(dst,status);
+        console.log(key);
         if (key in graph){ //!!! What did Jisoo say? I forgot...
             return graph[key];
         }else{
@@ -116,17 +118,15 @@ function earleyParseInput(grammars, input){
         var N = edgeProgression.N;
         var RHS = edgeProgression.RHS;
         var pos = edgeProgression.pos;
-
-        var temp = edgesIncomingTo(dst, status);
-        var edgeList = temp[0];
-        var edgeSet = temp[1];
-
         var status;
         if (RHS.length == pos) {
             status = complete;
         } else {
             status = inProgress;
         }
+        var temp = edgesIncomingTo(dst, status);
+        var edgeList = temp[0];
+        var edgeSet = temp[1];
 
         if (!(edgeInList(e, edgeSet))){
             
@@ -271,11 +271,13 @@ function earleyParseInput(grammars, input){
     // Checking ambiguity and modifying "graph" according to dprec (if given)
     var is_amb = false;
     var ambiguousStuff = [];
-
+    console.log(graph);
     for (key in graph) {
         var dest = getDestProg(key)[0];
         var comp = getDestProg(key)[1];
+        //console.log(getDestProg(key));
         if (comp == complete) {
+            console.log("complete edges");
             var edgeList = edgesIncomingTo(dest, comp)[0];
             var edgeSet = edgesIncomingTo(dest, comp)[1];
             for (edgeIndex in edgeList) {
@@ -292,26 +294,26 @@ function earleyParseInput(grammars, input){
                     var N2 = edgeProgression2.N;
                     var RHS2 = edgeProgression2.RHS;
                     var pos2 = edgeProgression2.pos;
-                    if (src == src2 && N == N2 && RHS != RHS2) {
-                        var dprecRHS = getDprec(RHS, grammars[N]);
-                        var dprecRHS2 = getDprec(RHS2, grammars[N]);
-                        if (dprecRHS == dprecRHS2) {
-                            is_amb = true;
-                            ambiguousStuff.push(N + "->" + RHS);
-                            ambiguousStuff.push(N + "->" + RHS2);
-                        } else if (dprecRHS > dprecRHS2) {
-                            var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
-                            if (index > -1) {
-                                finalEdges.splice(index, 1);
-                            } else {
-                                throw new ExecError("Edges not in finalEdges list?! Something is wrong!");
-                            }
-                        } else if (dprecRHS < dprecRHS2) {
-                            var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
-                            if (index > -1) {
-                                finalEdges.splice(index, 1);
-                            } else {
-                                throw new ExecError("Edges not in finalEdges list?! Something is wrong!");
+                    if (getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges) > -1) {
+                        if (src == src2 && N == N2 && RHS != RHS2 && pos == pos2) {
+                            var dprecRHS = getDprec(RHS, grammars[N]);
+                            var dprecRHS2 = getDprec(RHS2, grammars[N]);
+                            console.log("dprecRHS: " + dprecRHS);
+                            console.log("dprecRHS2: " + dprecRHS2);
+                            if (dprecRHS == dprecRHS2) {
+                                is_amb = true;
+                                ambiguousStuff.push(N + "->" + RHS);
+                                ambiguousStuff.push(N + "->" + RHS2);
+                            } else if (dprecRHS < dprecRHS2) {
+                                var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
+                                if (index > -1) {
+                                    finalEdges.splice(index, 1);
+                                }
+                            } else if (dprecRHS > dprecRHS2) {
+                                var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
+                                if (index > -1) {
+                                    finalEdges.splice(index, 1);
+                                }
                             }
                         }
                     }
@@ -327,6 +329,7 @@ function earleyParseInput(grammars, input){
         }
         alert(ambiguousOnes);
     }
-    
+    console.log(is_amb);
+    console.log(finalEdges);
     return {"nodes": nodelist, "initEdges": initEdgeList, "edges": finalEdges};
  }
