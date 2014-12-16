@@ -48,6 +48,8 @@
       Enter your input here : <input type="textbox" id="userinput" value="input if ( a ) if ( a ) else a" style="width: 570px"></input>
       <button id="Get">Enter</button> 
     </div>
+    <div id="complete-edge" style="font-family: sans-serif; font-size: 12px; float:right; padding-right:30px">
+    </div>
     <div style="font-family: sans-serif; font-size: 16px; height=50px;">
       <p id="errormessage" style="color: #ff0000;"></p>
     </div>
@@ -101,6 +103,7 @@
           </ul>
         </li>
         <li> For grammar, always <b style="color: #ff0000;">make S as the starting terminal</b>. Otherwise, the program will think the starting terminal doesn't exist. </li>
+        <li><b style="color: #ff0000;">This is very white-space sensitive!</b></li>
       </ul>
     </div>
     <img src="eecsoooo.jpg" alt="Team JVM!" style="">
@@ -132,8 +135,8 @@
         .text('Forward')
         .on('click', function() { stepForward(nowgraph); });
 
-      root.append('label')
-        .text("Draw Complete edges only")
+      d3.select('#complete-edge').append('label')
+        .text("Draw complete edges only")
         .append('input')
         .attr('type', 'checkbox')
         .text("Show only Completed edges");
