@@ -75,7 +75,7 @@ function getIndexOfEdge(dest, src, lhs, rhs, pos, edgeList){
     return -1;
 }
 
-function earleyParseInput(grammars, input){
+function earleyParseInput(grammars, input, completeEdgesOnly){
     //grammar represented by rhs, prec, lhs
     //a dictionary of edges
     var initEdgeList = [];
@@ -129,10 +129,13 @@ function earleyParseInput(grammars, input){
         var edgeSet = temp[1];
 
         if (!(edgeInList(e, edgeSet))){
-            
             edgeList.push(e);
             edgeSet.push(e);
-            finalEdges.push(e);
+            if(!completeEdgesOnly || (completeEdgesOnly && status === complete)){
+                console.log(completeEdgesOnly);
+                console.log(status);
+                finalEdges.push(e);
+            }
             return true;
         }
         
@@ -157,9 +160,7 @@ function earleyParseInput(grammars, input){
             // for each edge (i,j-1,N -> alpha . inp[j] beta)
             // add edge (i,j,N -> alpha inp[j] . beta)
             
-            var edgeList = edgesIncomingTo(j-1,inProgress)[0];
-            console.log("edges coming here: ")
-            
+            var edgeList = edgesIncomingTo(j-1,inProgress)[0];            
             for (edgeIndex in edgeList){ //(i, _j, n, rhs, pos)
                 var edge = edgeList[edgeIndex];
                 var i = edge.src;
@@ -169,17 +170,10 @@ function earleyParseInput(grammars, input){
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
 
-                if (_j !=j-1){
-                    
+                if (_j !=j-1){    
                     break;
                 }
                 
-                
-                
-                
-                
-                
-
                 if ((pos < RHS.length) && (RHS[pos] === input[j-1])){
                     addEdge(new Edge(i,j, (new EdgeProgression(N, RHS, pos+1))));
                 }
@@ -188,7 +182,6 @@ function earleyParseInput(grammars, input){
 
         var edgeWasInserted = true;
         while (edgeWasInserted){
-            console.log("WHILE EDGE IS INSERTED")
             edgeWasInserted = false;
             // COMPLETE productions
             // for each edge (i,j,N -> alpha .)
