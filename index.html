@@ -152,10 +152,15 @@
             handleUserInput("grammar S -> E");
             handleUserInput("grammar E -> E + E");
             handleUserInput("grammar E -> E - E"); 
+            handleUserInput("grammar E -> a");          
+          case "demo 3":
+            handleUserInput("grammar S -> E");
+            handleUserInput("grammar E -> E + E");
+            handleUserInput("grammar E -> E - E"); 
             handleUserInput("grammar E -> a");
             handleUserInput("assoc left +,-");
             break;
-          case "demo 3":
+          case "demo 4":
             handleUserInput("grammar S -> E");
             handleUserInput("grammar E -> if ( E ) E else E %dprec1");
             handleUserInput("grammar E -> if ( E ) E %dprec2");
