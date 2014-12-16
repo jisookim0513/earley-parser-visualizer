@@ -228,13 +228,15 @@
         });
       }
 
+      var root = d3.select('#inputline')
+      root.select("")
       $(document).ready(setupTextBox);
       handleUserInput("grammar S -> E");
       handleUserInput("grammar E -> E + E");
       handleUserInput("grammar E -> E * E"); 
       handleUserInput("grammar E -> a");
       handleUserInput("assoc left +");
-      handleUserInput("assoc right *");
+      handleUserInput("assoc left *");
     </script>
 
   </body>
