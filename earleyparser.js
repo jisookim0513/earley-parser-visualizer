@@ -53,9 +53,6 @@ function earleyParseInput(grammars, input){
         }
     }
 
-    console.log(nodelist);
-    console.log(initEdgeList);
-
     // Key is key representation.
     // Value is an array. 1st element is list of edges. 2nd is set of edges
     var graph = {};
@@ -108,10 +105,11 @@ function earleyParseInput(grammars, input){
 
     //!!! What is the format
     //seeds with all starts  
-    for (rhs in grammars["S"][0]){ //iterates through every RHS that has LHS as "S" (start terminal)
-        addEdge( new Edge(0,0, new EdgeProgression("S", rhs, 0)));
+    var RHSes = grammars["S"];
+    for (index in RHSes){ //iterates through every RHS that has LHS as "S" (start terminal)
+        var rhs = RHSes[index];
+        addEdge(new Edge(0,0, new EdgeProgression("S", rhs, 0)));
     }
-
 
     for (j = 0; j < input.length + 1; j++){// !!! Why is this not 0?
         // skip in first iteration; we need to complete and predict the
@@ -120,7 +118,10 @@ function earleyParseInput(grammars, input){
             // ADVANCE TO THE NEXT TOKEN
             // for each edge (i,j-1,N -> alpha . inp[j] beta)
             // add edge (i,j,N -> alpha inp[j] . beta)
-            var edgeList = edgesIncomingTo(j-1,1)[0];
+            var edgeList = edgesIncomingTo(j-1,inProgress)[0];
+            console.log("Edges Incoming To: ");
+            console.log(j-1);
+            console.log(edgeList);
             for (edgeIndex in edgeList){ //(i, _j, n, rhs, pos)
                 var edge = edgeList[edgeIndex];
                 var i = edge.src;
@@ -130,7 +131,10 @@ function earleyParseInput(grammars, input){
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
 
-                if ((pos < RHS.length) && (RHS[pos] == input[j-1])){
+                if (_j !=j-1){
+                    throw new Error("Assertion Failed");
+                }
+                if ((pos < RHS.length) && (RHS[pos] === input[j-1])){
                     addEdge(new Edge(i,j, (new EdgeProgression(N, RHS, pos+1))));
                 }
             }
@@ -192,7 +196,7 @@ function earleyParseInput(grammars, input){
                     var M = RHS[pos];
                     //prediction: for all rules D->alpha add edge (j,j,.alpha)
                     // !!! What is the format
-                    var RHSes = grammars[M][0];
+                    var RHSes = grammars[M];
                     for (RHSindex in RHSes){ //iterates through the list of RHS from the every grammar with this LHS
                         var RHS = RHSes[RHSindex];
                         var x = addEdge(new Edge(j,j, new Edge(M, RHS, 0)));

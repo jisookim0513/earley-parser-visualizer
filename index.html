@@ -45,7 +45,7 @@
     <!-- Temporarily textbox for user input -->
   <div id="left">
     <div id='inputline' style="font-family: sans-serif; font-size: 12px; height=50px;">
-      Enter your input here : <input type="textbox" id="userinput" value="input 1+1" style="width: 570px"></input>
+      Enter your input here : <input type="textbox" id="userinput" value="input a+a" style="width: 570px"></input>
       <button id="Get">Enter</button> 
     </div>
     <div style="font-family: sans-serif; font-size: 16px; height=50px;">
@@ -136,6 +136,7 @@
       function handleUserInput(text){
         try {
           var ast = parse(text);
+          console.log(ast);
           var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
           displayGrammar(ast.type, text);
           setErrorMessage("");
@@ -145,6 +146,7 @@
         if (obj){
           var input = obj.input;
           var earleyResult = earleyParse(obj.grammars, input);
+          console.log(earleyResult);
           nowgraph = new Graph(earleyResult.edges, earleyResult.nodes, earleyResult.initEdges);
           drawGraph(nowgraph);
         }
@@ -153,14 +155,14 @@
 
       // Calls Jisoo's parser
       function parse(text){
-        console.log(parseInput(text));
         return parseInput(text);
       }
 
       // Calls Vivian;s earley parser
-      function earleyParse(gramars, input){
-        var gramms = {"E": {"rhs": "Num + E", "dprec": null}, "Num": {"rhs": "1", "dprec": null}, "S": {"rhs": "E", "dprec": null}, "assoc": {"+": [1, "left"], "counter": 1}};
-        return earleyParseInput(gramms, input);
+      function earleyParse(grammars, input){
+       // var gramms = {"E": {"rhs": "Num + E", "dprec": null}, "Num": {"rhs": "1", "dprec": null}, "S": {"rhs": "E", "dprec": null}, "assoc": {"+": [1, "left"], "counter": 1}};
+        //return earleyParseInput(gramms, input);
+        return earleyParseInput(grammars, input);
       }
       
       var nodelist = [0, 1, 2, 3, 4, 5];
