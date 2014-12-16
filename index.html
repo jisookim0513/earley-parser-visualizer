@@ -142,28 +142,48 @@
         .text("Show only Completed edges");
       // Receive input from REPL, parse it into AST
       function handleUserInput(text){
-        try {
-          var ast = parse(text);
-          var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
-          displayGrammar(ast.type, text);
-         // $('#userinput').val("");
-          setErrorMessage("");
-        } catch (err){
-          setErrorMessage(err.message);
+        switch(text) {
+          case "demo 1":
+            handleUserInput("grammar S -> E E");
+            handleUserInput("grammar E -> hello");
+            handleUserInput("grammar E -> world");
+            break;
+          case "demo 2":
+            handleUserInput("grammar S -> E");
+            handleUserInput("grammar E -> E + E");
+            handleUserInput("grammar E -> E - E"); 
+            handleUserInput("grammar E -> a");
+            handleUserInput("assoc left +,-");
+            break;
+          case "demo 3":
+            handleUserInput("grammar S -> E");
+            handleUserInput("grammar E -> if ( E ) E else E %dprec1");
+            handleUserInput("grammar E -> if ( E ) E %dprec2");
+            handleUserInput("grammar E -> a")
+            break;
+          default:
+            try {
+              var ast = parse(text);
+              var obj = eval(ast); // Returns an object if ast is type input. Otherwise null
+              displayGrammar(ast.type, text);
+             // $('#userinput').val("");
+              setErrorMessage("");
+            } catch (err){
+              setErrorMessage(err.message);
+            }
+            if (obj){
+              try {
+                var input = obj.input;
+                var completeEdgesOnly = d3.select('#complete-edge').select('label').select('input')[0][0].checked;
+                var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
+                var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
+              } catch (err){
+                setErrorMessage(err.message);
+              }
+              nowgraph = new Graph(marshalledEdges, earleyResult.nodes, earleyResult.initEdges);
+              drawGraph(nowgraph);
+            }
         }
-        if (obj){
-          try {
-            var input = obj.input;
-            var completeEdgesOnly = d3.select('#complete-edge').select('label').select('input')[0][0].checked;
-            var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
-            var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
-          } catch (err){
-            setErrorMessage(err.message);
-          }
-          nowgraph = new Graph(marshalledEdges, earleyResult.nodes, earleyResult.initEdges);
-          drawGraph(nowgraph);
-        }
-
       }
 
       // Calls Jisoo's parser
@@ -234,31 +254,6 @@
       $(document).ready(setupTextBox);
 
       d3.select('#complete-edge').select('label').select('input')[0][0].checked = true;
-
-      var x = 3;
-      switch (x) {
-        case 0:
-          break;
-        case 1:
-          handleUserInput("grammar S -> E E");
-          handleUserInput("grammar E -> hello");
-          handleUserInput("grammar E -> world");
-          break;
-        case 2:
-          handleUserInput("grammar S -> E");
-          handleUserInput("grammar E -> E + E");
-          handleUserInput("grammar E -> E - E"); 
-          handleUserInput("grammar E -> a");
-          handleUserInput("assoc left +,-");
-        case 3:
-          handleUserInput("grammar S -> E");
-          handleUserInput("grammar E -> if ( E ) E else E %dprec1");
-          handleUserInput("grammar E -> if ( E ) E %dprec2");
-          handleUserInput("grammar E -> a")
-          
-        break;
-      }
-
 
     </script>
 
