@@ -206,6 +206,8 @@ function earleyParseInput(grammars, input){
             }
         }
     }
-
+    console.log(nodelist);
+    console.log(initEdgeList);
+    console.log(finalEdges);
     return {"nodes": nodelist, "initEdges": initEdgeList, "edges": finalEdges};
  }
