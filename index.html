@@ -12,7 +12,7 @@
     #left { 
        border:1px solid #d4d4d4;
        width:62%; 
-       height:700px; 
+       height:1000px; 
        float:left; 
        padding-top:10px;
        padding-left:15px;
@@ -21,14 +21,14 @@
     #right { 
        border:1px solid #d4d4d4;
        width:13%; 
-       height:710px; 
+       height:1000px; 
        float:left;
        padding-left:20px;
     }
 
     #syntax-guide {
         width:20%; 
-        height:710px; 
+        height:1000px; 
         float:left;
         border:1px solid #d4d4d4;
         padding-right:10px;
@@ -45,8 +45,10 @@
     <!-- Temporarily textbox for user input -->
   <div id="left">
     <div id='inputline' style="font-family: sans-serif; font-size: 12px; height=50px;">
-      Enter your input here : <input type="textbox" id="userinput" value="input - a - b u c" style="width: 570px"></input>
+      Enter your input here : <input type="textbox" id="userinput" value="input a + a * a" style="width: 570px"></input>
       <button id="Get">Enter</button> 
+    </div>
+    <div id="complete-edge" style="font-family: sans-serif; font-size: 12px; float:right; padding-right:30px">
     </div>
     <div style="font-family: sans-serif; font-size: 16px; height=50px;">
       <p id="errormessage" style="color: #ff0000;"></p>
@@ -101,6 +103,7 @@
           </ul>
         </li>
         <li> For grammar, always <b style="color: #ff0000;">make S as the starting terminal</b>. Otherwise, the program will think the starting terminal doesn't exist. </li>
+        <li><b style="color: #ff0000;">This is very white-space sensitive!</b></li>
       </ul>
     </div>
     <img src="eecsoooo.jpg" alt="Team JVM!" style="">
@@ -116,7 +119,7 @@
 
       // width and height of svg
       var w = parseFloat(d3.select("#left").style("width").substring(0, d3.select("#left").style("width").length-2));
-      var h = 610;
+      var h = 910;
       var circleDist = 150;
       var svg = d3.select("#left").append("svg").attr("width", w).attr("height", h);
 
@@ -132,8 +135,8 @@
         .text('Forward')
         .on('click', function() { stepForward(nowgraph); });
 
-      root.append('label')
-        .text("Draw Complete edges only")
+      d3.select('#complete-edge').append('label')
+        .text("Draw complete edges only")
         .append('input')
         .attr('type', 'checkbox')
         .text("Show only Completed edges");
@@ -150,7 +153,7 @@
         }
         if (obj){
           var input = obj.input;
-          var completeEdgesOnly = root.select('label').select('input')[0][0].checked;
+          var completeEdgesOnly = d3.select('#complete-edge').select('label').select('input')[0][0].checked;
           var earleyResult = earleyParse(obj.grammars, input, completeEdgesOnly);
           console.log(earleyResult);
           var marshalledEdges = marshallEdges(earleyResult.edges); // Changes edge representation from Earley's, to D3's
@@ -224,33 +227,16 @@
           handleUserInput($('#userinput').val());
         });
       }
-
       $(document).ready(setupTextBox);
+
+      d3.select('#complete-edge').select('label').select('input')[0][0].checked = true;
+ 
       handleUserInput("grammar S -> E");
-      // handleUserInput("grammar E -> E+E");
-      // handleUserInput("grammar E -> E-E");
-      // handleUserInput("grammar E -> E*E");
-
-      /*
-      handleUserInput("grammar E -> if ( E ) E");
-      handleUserInput("grammar E -> if ( E ) E else E");
+      handleUserInput("grammar E -> E + E");
+      handleUserInput("grammar E -> E * E"); 
       handleUserInput("grammar E -> a");
-      handleUserInput("grammar E -> b");
-      */
-      handleUserInput("grammar E -> E BOP E");
-      handleUserInput("grammar E -> N");
-      handleUserInput("grammar E -> V");
-      handleUserInput("grammar BOP -> ^");
-      handleUserInput("grammar BOP -> -");
-      handleUserInput("grammar BOP -> u");
-      handleUserInput("grammar N -> ( E )");
-      handleUserInput("grammar N -> - E");
-      handleUserInput("grammar N -> V");
-      handleUserInput("grammar V -> a");
-      handleUserInput("grammar V -> b");
-      handleUserInput("grammar V -> c");
-      handleUserInput("grammar V -> d");
-
+      handleUserInput("assoc left +");
+      handleUserInput("assoc right *");
     </script>
 
   </body>

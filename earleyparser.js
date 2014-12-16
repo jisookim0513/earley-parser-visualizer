@@ -14,8 +14,6 @@ Key.prototype.toString = function(){
 
 // Used to parse key and return the destination
 function getDestProg(key){
-    console.log(">>>>");
-    console.log(key);
     var dest_prog = key.substring(1, key.length - 1).split(", ");
     return dest_prog;
 }
@@ -97,7 +95,6 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
 
     function edgesIncomingTo(dst,status){
         var key = new Key(dst,status);
-        console.log(key);
         if (key in graph){ //!!! What did Jisoo say? I forgot...
             return graph[key];
         }else{
@@ -132,8 +129,6 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
             edgeList.push(e);
             edgeSet.push(e);
             if(!completeEdgesOnly || (completeEdgesOnly && status === complete)){
-                console.log(completeEdgesOnly);
-                console.log(status);
                 finalEdges.push(e);
             }
             return true;
@@ -168,9 +163,9 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
 
-                if (_j !=j-1){    
-                    break;
-                }
+                // if (_j !=j-1){    
+                //     break;
+                // }
                 
                 if ((pos < RHS.length) && (RHS[pos] === input[j-1])){
                     addEdge(new Edge(i,j, (new EdgeProgression(N, RHS, pos+1))));
@@ -198,10 +193,10 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
                 var RHS = edgeProgression.RHS;
                 var pos = edgeProgression.pos;
                 
-                if(_j != j || pos != RHS.length){
+                // if(_j != j || pos != RHS.length){
                     
-                    break;
-                }
+                //     break;
+                // }
                 var edgeList2 = edgesIncomingTo(i,inProgress)[0];
                 
                 for (edgeIndex2 in edgeList2){ //(k,_i,m,rhs2,pos2)
@@ -271,6 +266,7 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
             console.log("complete edges");
             var edgeList = edgesIncomingTo(dest, comp)[0];
             var edgeSet = edgesIncomingTo(dest, comp)[1];
+            console.log(edgeList);
             for (edgeIndex in edgeList) {
                 var edge = edgeList[edgeIndex];
                 var src = edge.src;
@@ -286,24 +282,56 @@ function earleyParseInput(grammars, input, completeEdgesOnly){
                     var RHS2 = edgeProgression2.RHS;
                     var pos2 = edgeProgression2.pos;
                     if (getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges) > -1) {
-                        if (src == src2 && N == N2 && RHS != RHS2 && pos == pos2) {
+                        if (src == src2 && N == N2 && RHS != RHS2) { // AMBIGUOUS!
+                            var opPrecExists = false;
                             var dprecRHS = getDprec(RHS, grammars[N]);
                             var dprecRHS2 = getDprec(RHS2, grammars[N]);
-                            console.log("dprecRHS: " + dprecRHS);
-                            console.log("dprecRHS2: " + dprecRHS2);
-                            if (dprecRHS == dprecRHS2) {
-                                is_amb = true;
-                                ambiguousStuff.push(N + "->" + RHS);
-                                ambiguousStuff.push(N + "->" + RHS2);
-                            } else if (dprecRHS < dprecRHS2) {
-                                var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
-                                if (index > -1) {
-                                    finalEdges.splice(index, 1);
+                            var opPrecVal1;
+                            var opPrecVal2;
+                            // supporting only binary operator for now
+                            if (RHS.length == 3 && RHS2.length == 3) {
+                                var op1 = RHS[1];
+                                var op2 = RHS2[1];
+                                var assocs = grammars["assoc"];
+                                var opPrec1 = assocs[op1];
+                                var opPrec2 = assocs[op2];
+                                if (opPrec1 != undefined && opPrec2 != undefined) {
+                                    console.log("assoc exists!");
+                                    opPrecExists = true;
+                                    opPrecVal1 = opPrec1[0];
+                                    opPrecVal2 = opPrec2[0];
                                 }
-                            } else if (dprecRHS > dprecRHS2) {
-                                var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
-                                if (index > -1) {
-                                    finalEdges.splice(index, 1);
+                            }
+                            if (!opPrecExists){
+                                console.log("dprecRHS: " + dprecRHS);
+                                console.log("dprecRHS2: " + dprecRHS2);
+                                if (dprecRHS == dprecRHS2) {
+                                    is_amb = true;
+                                    ambiguousStuff.push(N + "->" + RHS.join().replace(/,/g, " ") + ': ' + "(" + src + ", " + dest + ")" );
+                                } else if (dprecRHS > dprecRHS2) {
+                                    var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
+                                    if (index > -1) {
+                                        finalEdges.splice(index, 1);
+                                    }
+                                } else if (dprecRHS < dprecRHS2) {
+                                    var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
+                                    if (index > -1) {
+                                        finalEdges.splice(index, 1);
+                                    }
+                                }
+                            } else {
+                                if (opPrecVal1 < opPrecVal2) {
+                                    var index = getIndexOfEdge(dest, src2, N2, RHS2, pos2, finalEdges);
+                                    if (index > -1) {
+                                        finalEdges.splice(index, 1);
+                                    }
+                                } else if (opPrecVal1 > opPrecVal2) {
+                                    var index = getIndexOfEdge(dest, src, N, RHS, pos, finalEdges);
+                                    if (index > -1) {
+                                        finalEdges.splice(index, 1);
+                                    }
+                                } else {
+                                    // check for associativity
                                 }
                             }
                         }
