@@ -45,7 +45,7 @@
     <!-- Temporarily textbox for user input -->
   <div id="left">
     <div id='inputline' style="font-family: sans-serif; font-size: 12px; height=50px;">
-      Enter your input here : <input type="textbox" id="userinput" value="input a+a" style="width: 570px"></input>
+      Enter your input here : <input type="textbox" id="userinput" value="input if ( a ) if ( a ) else a" style="width: 570px"></input>
       <button id="Get">Enter</button> 
     </div>
     <div style="font-family: sans-serif; font-size: 16px; height=50px;">
@@ -177,10 +177,11 @@
           var edge = edges[i];
           var edgeProgression = edge.edgeProgression;
           var lhs = edgeProgression.N;
-          var rhs = edgeProgression.RHS;
-          var pos = edgeProgression.pos;
-          var dottedRHS = rhs.substring(0,pos) + "." + rhs.substring(pos,rhs.length);
-          marshalled.push([edge.src, edge.dst, lhs + " -> " + dottedRHS]);
+          var rhs = ""
+          for (index in edgeProgression.RHS) {
+            rhs = rhs + edgeProgression.RHS[index] + " " ;
+          }
+          marshalled.push([edge.src, edge.dst, lhs + " -> " +rhs]);
         }
         return marshalled;
       }
@@ -222,8 +223,11 @@
 
       $(document).ready(setupTextBox);
       handleUserInput("grammar S -> E");
-      handleUserInput("grammar E -> E+E");
-      handleUserInput("grammar E -> E-E");
+      // handleUserInput("grammar E -> E+E");
+      // handleUserInput("grammar E -> E-E");
+      // handleUserInput("grammar E -> E*E");
+      handleUserInput("grammar E -> if ( E ) E");
+      handleUserInput("grammar E -> if ( E ) E else E");
       handleUserInput("grammar E -> a");
       handleUserInput("grammar E -> b");
     </script>
